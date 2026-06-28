@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/subjects", "destination": "/index.html" },
+    { "source": "/siyumim", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" }
+  ]
+}
