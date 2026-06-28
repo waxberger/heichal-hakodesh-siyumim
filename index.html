@@ -380,6 +380,7 @@ html,body{height:100%;font-family:var(--font);background:var(--cream);color:var(
       <button class="admin-tab" onclick="switchAdminTab('subjects-mgr',this)">ניהול מקצועות</button>
       <button class="admin-tab" onclick="switchAdminTab('users',this)">ניהול משתמשים</button>
       <button class="admin-tab" onclick="switchAdminTab('new-user',this)">יצירת משתמש</button>
+      <button class="admin-tab" onclick="switchAdminTab('requests',this)">בקשות ממתינות <span id="req-badge" style="background:#c0392b;color:#fff;border-radius:10px;font-size:10px;padding:1px 7px;margin-right:4px">2</span></button>
     </div>
 
     <!-- OVERVIEW -->
@@ -453,6 +454,66 @@ html,body{height:100%;font-family:var(--font);background:var(--cream);color:var(
         </div>
       </div>
     </div>
+  <!-- REQUESTS -->
+    <div class="admin-content" id="ac-requests">
+      <div id="req-alert" class="alert success"><span>✓</span><span id="req-alert-msg"></span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-size:14px;color:var(--muted)">בקשות ממתינות לאישור: <strong>2</strong></div>
+        <a href="/register.html" target="_blank" class="btn primary sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">🔗 קישור לדף הרשמה</a>
+      </div>
+
+      <div style="background:rgba(184,151,46,.07);border:1px solid rgba(184,151,46,.2);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13px;color:var(--muted)">
+        💡 שלח את הקישור <strong>heichal-hakodesh-siyumim.vercel.app/register.html</strong> לאנשים שרוצים להצטרף. כל בקשה תגיע כאן לאישורך.
+      </div>
+
+      <!-- בקשה 1 -->
+      <div style="background:var(--white);border:1px solid var(--cream2);border-radius:12px;padding:20px;margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">ר' אברהם גרינברג</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:2px">📧 avraham@gmail.com</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:2px">📞 052-1234567</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">📍 ירושלים</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">שניים מקרא</span>
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">תהילים יומי</span>
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">ח"י פרקים</span>
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">דף יומי</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px;font-style:italic">"אני מכיר את ר' ישראל מהקהילה ורוצה להצטרף למערכת"</div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);white-space:nowrap">נשלח: כ"ה סיון תשפ"ו</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--cream2);padding-top:14px">
+          <button class="btn primary sm" onclick="approveRequest(this,'אברהם גרינברג')">✓ אשר ושלח הזמנה</button>
+          <button class="btn sm" style="border:1px solid var(--cream2);background:transparent;color:var(--muted)" onclick="rejectRequest(this,'אברהם גרינברג')">✗ דחה</button>
+        </div>
+      </div>
+
+      <!-- בקשה 2 -->
+      <div style="background:var(--white);border:1px solid var(--cream2);border-radius:12px;padding:20px;margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">ר' יעקב פרידמן</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:2px">📧 yaakov@gmail.com</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:2px">📞 054-9876543</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">📍 בני ברק</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">שניים מקרא</span>
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">לקוטי מוהר"ן</span>
+              <span style="font-size:11px;background:rgba(184,151,46,.1);color:var(--gold);padding:2px 8px;border-radius:6px;border:1px solid rgba(184,151,46,.2)">תיקון זוהר</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);white-space:nowrap">נשלח: כ"ד סיון תשפ"ו</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--cream2);padding-top:14px">
+          <button class="btn primary sm" onclick="approveRequest(this,'יעקב פרידמן')">✓ אשר ושלח הזמנה</button>
+          <button class="btn sm" style="border:1px solid var(--cream2);background:transparent;color:var(--muted)" onclick="rejectRequest(this,'יעקב פרידמן')">✗ דחה</button>
+        </div>
+      </div>
+
+    </div>
+
   </div><!-- /page-admin -->
 
   <div class="footer">© היכל הקודש ברסלב | מערכת סיומים</div>
@@ -845,6 +906,25 @@ function filterCat(cat,btn) {
 }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 function switchLang(lang,btn) { document.querySelectorAll('.ll-btn,.hl-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+
+// ── REQUESTS ──
+function approveRequest(btn, name) {
+  const card = btn.closest('div[style*="border-radius:12px"]');
+  card.style.opacity = '0.5';
+  card.style.pointerEvents = 'none';
+  const a = document.getElementById('req-alert');
+  document.getElementById('req-alert-msg').textContent = name + ' אושר – נשלח מייל הזמנה';
+  a.classList.add('show');
+  setTimeout(()=>a.classList.remove('show'), 4000);
+  document.getElementById('req-badge').textContent = parseInt(document.getElementById('req-badge').textContent) - 1;
+}
+function rejectRequest(btn, name) {
+  if (!confirm('לדחות את הבקשה של ' + name + '?')) return;
+  const card = btn.closest('div[style*="border-radius:12px"]');
+  card.style.opacity = '0.4';
+  card.style.pointerEvents = 'none';
+  document.getElementById('req-badge').textContent = parseInt(document.getElementById('req-badge').textContent) - 1;
+}
 
 // Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(o=>{
