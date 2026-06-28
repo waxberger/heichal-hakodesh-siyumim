@@ -4,629 +4,550 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>היכל הקודש – מערכת סיומים</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Noto+Serif+Hebrew:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D1B2A;
+  --navy2:#162032;
+  --navy3:#1e2f47;
+  --gold:#B8972E;
+  --gold2:#D4AF50;
+  --gold3:#F0D080;
+  --cream:#F5F0E8;
+  --cream2:#EDE6D6;
+  --white:#FFFFFF;
+  --text:#1A1A1A;
+  --muted:#6B6355;
+  --border:rgba(184,151,46,0.2);
+  --radius:10px;
+  --font:'Frank Ruhl Libre',Georgia,serif;
+}
+html,body{height:100%;font-family:var(--font);background:var(--cream);color:var(--text)}
 
-  :root {
-    --navy:   #0D1B2A;
-    --navy2:  #162032;
-    --gold:   #B8972E;
-    --gold2:  #D4AF50;
-    --gold3:  #F0D080;
-    --cream:  #F5F0E8;
-    --cream2: #EDE6D6;
-    --white:  #FFFFFF;
-    --text:   #1A1A1A;
-    --muted:  #6B6355;
-    --border: rgba(184,151,46,0.25);
-    --radius: 10px;
-    --font-serif: 'Frank Ruhl Libre', 'Noto Serif Hebrew', Georgia, serif;
-  }
+/* ── OVERLAY ── */
+#loginOverlay{
+  position:fixed;inset:0;z-index:999;
+  background:radial-gradient(ellipse at 50% 30%, #1e3050 0%, var(--navy) 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+.lo-logo{width:90px;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(212,175,80,.4))}
+.lo-title{font-size:34px;font-weight:900;color:var(--gold3);letter-spacing:.03em;margin-bottom:6px}
+.lo-sub{font-size:13px;color:rgba(240,208,128,.5);font-weight:300;margin-bottom:36px;text-align:center}
+.lo-card{background:rgba(255,255,255,.05);border:1px solid rgba(184,151,46,.25);border-radius:16px;padding:32px 36px;width:340px}
+.lo-input{width:100%;padding:11px 14px;border:1px solid rgba(184,151,46,.25);border-radius:var(--radius);background:rgba(255,255,255,.07);color:#fff;font-family:var(--font);font-size:14px;margin-bottom:11px;outline:none;text-align:right;transition:border-color .2s}
+.lo-input::placeholder{color:rgba(255,255,255,.3)}
+.lo-input:focus{border-color:var(--gold2)}
+.lo-btn{width:100%;padding:12px;border:none;border-radius:var(--radius);font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s}
+.lo-btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);margin-bottom:10px}
+.lo-btn.ghost{background:transparent;border:1px solid rgba(184,151,46,.35);color:var(--gold3)}
+.lo-btn:hover{opacity:.85}
+.lo-divider{text-align:center;color:rgba(255,255,255,.2);font-size:12px;margin:8px 0}
+.lo-langs{display:flex;gap:8px;margin-top:22px}
+.ll-btn{padding:5px 14px;border-radius:20px;border:1px solid rgba(184,151,46,.3);background:transparent;color:rgba(240,208,128,.6);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .15s}
+.ll-btn.active,.ll-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
 
-  html, body { height: 100%; }
-  body {
-    font-family: var(--font-serif);
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* ── APP ── */
+#app{display:none;flex-direction:column;min-height:100vh}
 
-  /* ── OVERLAY LOGIN ── */
-  #loginOverlay {
-    position: fixed; inset: 0; z-index: 999;
-    background: linear-gradient(160deg, var(--navy) 0%, #1a2e44 100%);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 0;
-  }
+/* ── HEADER ── */
+.hdr{
+  background:var(--navy);
+  border-bottom:2px solid var(--gold);
+  padding:0 28px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.hdr-brand{display:flex;align-items:center;gap:14px}
+.hdr-logo{width:40px;filter:drop-shadow(0 0 8px rgba(212,175,80,.4))}
+.hdr-title{font-size:17px;font-weight:700;color:var(--gold3);line-height:1.15}
+.hdr-sub{font-size:11px;color:rgba(240,208,128,.45);font-weight:300}
+.hdr-nav{display:flex;gap:2px}
+.nav-btn{padding:7px 15px;border:none;background:transparent;color:rgba(240,208,128,.5);font-family:var(--font);font-size:13px;cursor:pointer;border-radius:var(--radius);transition:all .15s;border-bottom:2px solid transparent}
+.nav-btn:hover{color:var(--gold3);background:rgba(184,151,46,.1)}
+.nav-btn.active{color:var(--gold2);border-bottom-color:var(--gold2);background:rgba(184,151,46,.08)}
+.hdr-langs{display:flex;gap:5px}
+.hl-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(184,151,46,.3);background:transparent;color:rgba(240,208,128,.55);font-size:11px;font-family:var(--font);cursor:pointer;transition:all .15s}
+.hl-btn.active,.hl-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
 
-  .login-menorah {
-    width: 110px;
-    margin-bottom: 18px;
-    filter: drop-shadow(0 0 18px rgba(212,175,80,0.35));
-  }
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(160deg,var(--navy2) 0%,#1e3350 60%,var(--navy2) 100%);
+  padding:28px 28px 22px;text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.hero-greet{font-size:12px;color:var(--gold);letter-spacing:.08em;margin-bottom:4px}
+.hero-name{font-size:24px;font-weight:900;color:#fff;margin-bottom:4px}
+.hero-nasi{font-size:12px;color:rgba(240,208,128,.45);font-weight:300}
+.hero-date{margin-top:12px;display:inline-block;padding:4px 18px;border:1px solid rgba(184,151,46,.25);border-radius:20px;font-size:12px;color:var(--gold2);background:rgba(184,151,46,.07)}
 
-  .login-box-title {
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--gold3);
-    text-align: center;
-    letter-spacing: 0.02em;
-    margin-bottom: 4px;
-  }
-  .login-box-sub {
-    font-size: 13px;
-    color: rgba(240,208,128,0.6);
-    text-align: center;
-    margin-bottom: 32px;
-    font-weight: 300;
-  }
-  .login-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(184,151,46,0.3);
-    border-radius: 16px;
-    padding: 32px 36px;
-    width: 340px;
-    backdrop-filter: blur(8px);
-  }
-  .login-field {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid rgba(184,151,46,0.3);
-    border-radius: var(--radius);
-    background: rgba(255,255,255,0.07);
-    color: var(--white);
-    font-family: var(--font-serif);
-    font-size: 14px;
-    margin-bottom: 12px;
-    outline: none;
-    transition: border-color 0.2s;
-    text-align: right;
-  }
-  .login-field::placeholder { color: rgba(255,255,255,0.35); }
-  .login-field:focus { border-color: var(--gold2); }
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);background:var(--white);border-bottom:1px solid var(--cream2)}
+.stat{padding:16px 12px;text-align:center;border-left:1px solid var(--cream2)}
+.stat:last-child{border-left:none}
+.stat-n{font-size:30px;font-weight:900;color:var(--navy);line-height:1}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px}
 
-  .btn-primary {
-    width: 100%;
-    padding: 13px;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
-    color: var(--navy);
-    border: none;
-    border-radius: var(--radius);
-    font-family: var(--font-serif);
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: opacity 0.2s;
-  }
-  .btn-primary:hover { opacity: 0.88; }
+/* ── PAGE ── */
+.page{display:none;padding:24px;max-width:860px;margin:0 auto;width:100%}
+.page.active{display:block}
 
-  .btn-ghost {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    color: var(--gold3);
-    border: 1px solid rgba(184,151,46,0.4);
-    border-radius: var(--radius);
-    font-family: var(--font-serif);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-ghost:hover { background: rgba(184,151,46,0.08); }
+/* ── SECTION LABEL ── */
+.sec{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin:24px 0 14px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  .login-divider {
-    text-align: center;
-    color: rgba(255,255,255,0.25);
-    font-size: 12px;
-    margin: 10px 0;
-  }
+/* ── TODAY CARD ── */
+.today{background:var(--navy);border-radius:14px;border:1px solid rgba(184,151,46,.18);overflow:hidden;margin-bottom:4px}
+.today-hdr{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.today-title{font-size:15px;font-weight:700;color:var(--gold3)}
+.today-date{font-size:12px;color:rgba(240,208,128,.4)}
+.today-row{padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.today-row:last-child{border-bottom:none}
+.today-txt{font-size:14px;color:rgba(255,255,255,.82);flex:1}
+.mark-btn{padding:5px 16px;border-radius:20px;border:1px solid rgba(184,151,46,.45);background:transparent;color:var(--gold2);font-size:12px;font-family:var(--font);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.mark-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.mark-btn.done{background:rgba(80,180,80,.12);border-color:rgba(80,200,80,.35);color:#6dda6d;cursor:default}
 
-  /* ── MAIN APP (hidden until login) ── */
-  #mainApp { display: none; flex-direction: column; min-height: 100vh; }
+/* ── SUBJECT CARDS ── */
+.subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.subj-card{background:var(--white);border:1px solid var(--cream2);border-radius:12px;padding:16px 18px;transition:border-color .2s,box-shadow .2s;cursor:default}
+.subj-card:hover{border-color:rgba(184,151,46,.4);box-shadow:0 2px 16px rgba(184,151,46,.08)}
+.subj-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.subj-info{}
+.subj-cat{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin-bottom:3px}
+.subj-name{font-size:15px;font-weight:700;color:var(--navy)}
+.subj-where{font-size:12px;color:var(--muted);margin-top:2px}
+.check-ring{width:26px;height:26px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:13px;color:transparent;transition:all .15s;background:transparent;margin-top:2px}
+.check-ring.done{background:var(--gold);color:var(--navy)}
+.prog-track{height:5px;background:var(--cream2);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s}
+.prog-row{display:flex;align-items:center;justify-content:space-between}
+.prog-pct{font-size:11px;color:var(--gold);font-weight:700}
+.prog-cnt{font-size:11px;color:var(--muted)}
 
-  /* ── HEADER ── */
-  .header {
-    background: var(--navy);
-    border-bottom: 2px solid var(--gold);
-    padding: 0 24px;
-    height: 66px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
-  .header-brand {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .header-logo {
-    width: 44px; height: 44px;
-    filter: drop-shadow(0 0 6px rgba(212,175,80,0.4));
-  }
-  .header-texts {}
-  .header-title {
-    font-size: 18px; font-weight: 700;
-    color: var(--gold3);
-    line-height: 1.1;
-    letter-spacing: 0.02em;
-  }
-  .header-sub {
-    font-size: 11px;
-    color: rgba(240,208,128,0.55);
-    font-weight: 300;
-  }
+/* ── CATEGORY TABS ── */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.cat-tab{padding:6px 16px;border-radius:20px;border:1px solid var(--cream2);background:var(--white);color:var(--muted);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s}
+.cat-tab:hover{border-color:var(--gold);color:var(--gold)}
+.cat-tab.active{background:var(--navy);color:var(--gold2);border-color:var(--navy)}
 
-  .lang-row { display: flex; gap: 5px; }
-  .lang-btn {
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(184,151,46,0.35);
-    background: transparent;
-    color: rgba(240,208,128,0.65);
-    font-size: 12px;
-    font-family: var(--font-serif);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .lang-btn.active, .lang-btn:hover {
-    background: var(--gold);
-    color: var(--navy);
-    border-color: var(--gold);
-    font-weight: 700;
-  }
+/* ── SIYUM LIST ── */
+.siyum-list{display:flex;flex-direction:column;gap:10px}
+.siyum-item{background:var(--white);border:1px solid var(--cream2);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:16px;transition:border-color .2s}
+.siyum-item:hover{border-color:rgba(184,151,46,.3)}
+.siyum-icon{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.siyum-body{flex:1}
+.siyum-name{font-size:15px;font-weight:700;color:var(--navy)}
+.siyum-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.siyum-date{font-size:12px;color:var(--gold);font-weight:700;white-space:nowrap}
 
-  .header-nav { display: flex; gap: 2px; }
-  .nav-btn {
-    padding: 7px 16px;
-    border: none; background: transparent;
-    color: rgba(240,208,128,0.55);
-    font-family: var(--font-serif);
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: var(--radius);
-    transition: all 0.15s;
-    border-bottom: 2px solid transparent;
-  }
-  .nav-btn:hover { color: var(--gold3); background: rgba(184,151,46,0.1); }
-  .nav-btn.active { color: var(--gold2); border-bottom-color: var(--gold2); background: rgba(184,151,46,0.08); }
+/* ── ADMIN ── */
+.admin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:6px}
+.admin-card{background:var(--white);border:1px solid var(--cream2);border-radius:12px;padding:18px;text-align:center}
+.admin-num{font-size:36px;font-weight:900;color:var(--navy);line-height:1}
+.admin-num.gold{color:var(--gold)}
+.admin-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.leader-item{background:var(--white);border:1px solid var(--cream2);border-radius:10px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.leader-name{font-size:14px;font-weight:700;color:var(--navy)}
+.leader-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.pct-badge{padding:4px 14px;border-radius:20px;background:rgba(184,151,46,.1);color:var(--gold);border:1px solid rgba(184,151,46,.3);font-size:12px;font-weight:700}
 
-  /* ── HERO BAND ── */
-  .hero-band {
-    background: linear-gradient(135deg, var(--navy2) 0%, #1e3350 60%, var(--navy2) 100%);
-    padding: 28px 28px 22px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-band::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B8972E' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-  }
-  .hero-greeting {
-    font-size: 13px; color: var(--gold); font-weight: 400;
-    margin-bottom: 4px; letter-spacing: 0.05em;
-  }
-  .hero-title {
-    font-size: 22px; font-weight: 700; color: var(--white);
-    margin-bottom: 4px;
-  }
-  .hero-nasi {
-    font-size: 12px; color: rgba(240,208,128,0.5); font-weight: 300;
-  }
-  .hero-date {
-    margin-top: 10px;
-    display: inline-block;
-    padding: 4px 16px;
-    border: 1px solid rgba(184,151,46,0.3);
-    border-radius: 20px;
-    font-size: 12px;
-    color: var(--gold2);
-    background: rgba(184,151,46,0.08);
-  }
+/* ── FOOTER ── */
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--muted);border-top:1px solid var(--cream2);margin-top:32px}
 
-  /* ── STATS ── */
-  .stats-row {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    background: var(--white);
-    border-bottom: 1px solid var(--cream2);
-  }
-  .stat-cell {
-    padding: 16px 12px;
-    text-align: center;
-    border-left: 1px solid var(--cream2);
-  }
-  .stat-cell:last-child { border-left: none; }
-  .stat-num {
-    font-size: 28px; font-weight: 900; color: var(--navy);
-    line-height: 1;
-  }
-  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+/* ── MOBILE NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:1px solid var(--gold);padding:8px 0 10px;z-index:40}
+.mob-nav-inner{display:flex;justify-content:space-around}
+.mob-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:rgba(240,208,128,.4);font-family:var(--font);font-size:10px;cursor:pointer;padding:3px 14px}
+.mob-btn svg{width:22px;height:22px;stroke-width:1.5}
+.mob-btn.active{color:var(--gold2)}
 
-  /* ── PAGE CONTENT ── */
-  .page { display: none; padding: 20px; max-width: 700px; margin: 0 auto; }
-  .page.active { display: block; }
-
-  /* section label */
-  .sec-label {
-    font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
-    color: var(--gold); text-transform: uppercase;
-    margin-bottom: 12px; margin-top: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .sec-label::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-
-  /* ── TODAY CARD ── */
-  .today-card {
-    background: var(--navy);
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 6px;
-    border: 1px solid rgba(184,151,46,0.2);
-  }
-  .today-card-header {
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid rgba(184,151,46,0.15);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .today-card-title { font-size: 15px; font-weight: 700; color: var(--gold3); }
-  .today-card-date { font-size: 12px; color: rgba(240,208,128,0.45); }
-  .today-item {
-    padding: 12px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 10px;
-  }
-  .today-item:last-child { border-bottom: none; }
-  .today-item-text { font-size: 14px; color: rgba(255,255,255,0.85); flex: 1; }
-  .mark-btn {
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(184,151,46,0.5);
-    background: transparent;
-    color: var(--gold2);
-    font-size: 12px;
-    font-family: var(--font-serif);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
-  .mark-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
-  .mark-btn.done {
-    background: rgba(80,160,80,0.15);
-    border-color: rgba(80,200,80,0.4);
-    color: #6dda6d;
-  }
-
-  /* ── SUBJECT CARDS ── */
-  .subjects-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-  }
-  .subj-card {
-    background: var(--white);
-    border: 1px solid var(--cream2);
-    border-radius: 12px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .subj-card:hover { border-color: var(--gold); box-shadow: 0 2px 12px rgba(184,151,46,0.1); }
-  .subj-card-top {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  .subj-name { font-size: 14px; font-weight: 700; color: var(--navy); }
-  .subj-where { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .check-ring {
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 2px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
-    font-size: 13px; color: transparent;
-    transition: all 0.15s;
-    background: transparent;
-  }
-  .check-ring.done { background: var(--gold); color: var(--navy); }
-  .prog-track {
-    height: 4px; background: var(--cream2); border-radius: 2px; overflow: hidden;
-    margin-bottom: 5px;
-  }
-  .prog-fill {
-    height: 100%; border-radius: 2px;
-    background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
-    transition: width 0.5s;
-  }
-  .prog-pct { font-size: 11px; color: var(--gold); font-weight: 700; }
-
-  /* ── SIYUMIM LIST ── */
-  .siyum-item {
-    background: var(--white);
-    border: 1px solid var(--cream2);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 10px;
-  }
-  .siyum-icon {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-  }
-  .siyum-name { font-size: 14px; font-weight: 700; color: var(--navy); }
-  .siyum-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  /* ── ADMIN ── */
-  .admin-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-    margin-bottom: 6px;
-  }
-  .admin-card {
-    background: var(--white);
-    border: 1px solid var(--cream2);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-  }
-  .admin-num { font-size: 32px; font-weight: 900; color: var(--navy); }
-  .admin-num.gold { color: var(--gold); }
-  .admin-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-  .leaderboard-item {
-    background: var(--white);
-    border: 1px solid var(--cream2);
-    border-radius: 10px;
-    padding: 12px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  .leaderboard-name { font-size: 14px; color: var(--navy); }
-  .leaderboard-sub { font-size: 11px; color: var(--muted); }
-  .pct-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: rgba(184,151,46,0.1);
-    color: var(--gold);
-    border: 1px solid rgba(184,151,46,0.3);
-    font-size: 12px; font-weight: 700;
-  }
-
-  /* ── FOOTER ── */
-  .footer {
-    text-align: center;
-    padding: 16px;
-    font-size: 11px;
-    color: var(--muted);
-    border-top: 1px solid var(--cream2);
-    margin-top: 24px;
-  }
-
-  /* ── MOBILE BOTTOM NAV ── */
-  .bottom-nav {
-    display: none;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--navy);
-    border-top: 1px solid var(--gold);
-    padding: 8px 0 10px;
-    z-index: 40;
-  }
-  .bottom-nav-inner {
-    display: flex; justify-content: space-around;
-  }
-  .bnav-btn {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px; background: none; border: none;
-    color: rgba(240,208,128,0.45);
-    font-family: var(--font-serif); font-size: 10px;
-    cursor: pointer; padding: 4px 12px;
-  }
-  .bnav-btn svg { width: 22px; height: 22px; stroke-width: 1.5; }
-  .bnav-btn.active { color: var(--gold2); }
-
-  @media (max-width: 600px) {
-    .header-nav { display: none; }
-    .bottom-nav { display: block; }
-    .page { padding: 14px 14px 80px; }
-    .subjects-grid { grid-template-columns: 1fr; }
-    .admin-grid { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: repeat(3,1fr); }
-  }
+@media(max-width:640px){
+  .hdr-nav{display:none}
+  .mob-nav{display:block}
+  .page{padding:14px 14px 80px}
+  .subj-grid{grid-template-columns:1fr}
+  .admin-grid{grid-template-columns:1fr}
+  .hero-name{font-size:20px}
+}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════ LOGIN ══════════════════ -->
+<!-- ══ LOGIN ══ -->
 <div id="loginOverlay">
-  <img class="login-menorah"
-    src="https://breslevcenter.com/images/icons/breslev_favicon.png"
-    alt="היכל הקודש ברסלב"
-    onerror="this.src='';this.style='font-size:64px;text-align:center;display:block;color:#D4AF50;' ; this.textContent='🕍'">
-  <div class="login-box-title" id="ll-title">היכל הקודש</div>
-  <div class="login-box-sub" id="ll-sub">מערכת סיומים | בנשיאות ראש הישיבה שליט"א</div>
-  <div class="login-card">
-    <input class="login-field" type="email" placeholder='אימייל / Email' id="lEmail" />
-    <input class="login-field" type="password" placeholder='סיסמה / Password' id="lPass" />
-    <button class="btn-primary" id="ll-enter" onclick="doLogin()">כניסה</button>
-    <div class="login-divider" id="ll-or">— או —</div>
-    <button class="btn-ghost" id="ll-reg" onclick="doLogin()">הרשמה חדשה / Register</button>
+  <img class="lo-logo" src="https://breslevcenter.com/images/icons/breslev_favicon.png" alt="היכל הקודש" onerror="this.style.display='none'">
+  <div class="lo-title" id="lo-title">היכל הקודש</div>
+  <div class="lo-sub" id="lo-sub">מערכת סיומים | בנשיאות ראש הישיבה שליט"א</div>
+  <div class="lo-card">
+    <input class="lo-input" type="email" id="lo-email" placeholder="אימייל / Email">
+    <input class="lo-input" type="password" id="lo-pw" placeholder="סיסמה / Password">
+    <button class="lo-btn primary" id="lo-enter" onclick="doLogin()">כניסה</button>
+    <div class="lo-divider" id="lo-or">— או —</div>
+    <button class="lo-btn ghost" id="lo-reg" onclick="doLogin()">הרשמה חדשה / Register</button>
   </div>
-  <div style="margin-top:20px; display:flex; gap:8px;">
-    <button class="lang-btn active" onclick="switchLang('he',this)">עברית</button>
-    <button class="lang-btn" onclick="switchLang('yi',this)">אידיש</button>
-    <button class="lang-btn" onclick="switchLang('en',this)">English</button>
+  <div class="lo-langs">
+    <button class="ll-btn active" onclick="switchLang('he',this)">עברית</button>
+    <button class="ll-btn" onclick="switchLang('yi',this)">אידיש</button>
+    <button class="ll-btn" onclick="switchLang('en',this)">English</button>
   </div>
 </div>
 
-<!-- ══════════════════ MAIN APP ══════════════════ -->
-<div id="mainApp">
+<!-- ══ APP ══ -->
+<div id="app">
 
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-brand">
-      <img class="header-logo"
-        src="https://breslevcenter.com/images/icons/breslev_favicon.png"
-        alt="לוגו ברסלב"
-        onerror="this.style='display:none'">
-      <div class="header-texts">
-        <div class="header-title">היכל הקודש – ברסלב</div>
-        <div class="header-sub" id="h-sub">מערכת סיומים | בנשיאות ראש הישיבה שליט"א</div>
+  <header class="hdr">
+    <div class="hdr-brand">
+      <img class="hdr-logo" src="https://breslevcenter.com/images/icons/breslev_favicon.png" alt="" onerror="this.style.display='none'">
+      <div>
+        <div class="hdr-title">היכל הקודש – ברסלב</div>
+        <div class="hdr-sub" id="h-sub">מערכת סיומים | בנשיאות ראש הישיבה שליט"א</div>
       </div>
     </div>
-
-    <nav class="header-nav">
-      <button class="nav-btn active" onclick="showPage('dashboard',this)" id="nav-dashboard">לוח בקרה</button>
-      <button class="nav-btn" onclick="showPage('siyumim',this)" id="nav-siyumim">הסיומים שלי</button>
-      <button class="nav-btn" onclick="showPage('admin',this)" id="nav-admin">מנהל</button>
+    <nav class="hdr-nav">
+      <button class="nav-btn active" onclick="showPage('dashboard',this)" id="n-dash">לוח בקרה</button>
+      <button class="nav-btn" onclick="showPage('subjects',this)" id="n-subj">המקצועות שלי</button>
+      <button class="nav-btn" onclick="showPage('siyumim',this)" id="n-siy">הסיומים שלי</button>
+      <button class="nav-btn" onclick="showPage('admin',this)" id="n-adm">מנהל</button>
     </nav>
-
-    <div class="lang-row" id="appLang">
-      <button class="lang-btn active" onclick="switchLang('he',this)">עב</button>
-      <button class="lang-btn" onclick="switchLang('yi',this)">אידיש</button>
-      <button class="lang-btn" onclick="switchLang('en',this)">EN</button>
+    <div class="hdr-langs">
+      <button class="hl-btn active" onclick="switchLang('he',this)">עב</button>
+      <button class="hl-btn" onclick="switchLang('yi',this)">אידיש</button>
+      <button class="hl-btn" onclick="switchLang('en',this)">EN</button>
     </div>
   </header>
 
   <!-- HERO -->
-  <div class="hero-band">
-    <div class="hero-greeting" id="hg">ברוך הבא</div>
-    <div class="hero-title" id="ht">ר' ישראל</div>
-    <div class="hero-nasi" id="hn">בנשיאות ראש הישיבה שליט"א</div>
-    <div class="hero-date" id="hd">פרשת בלק | יום ד' | כ"ה סיון תשפ"ו</div>
+  <div class="hero">
+    <div class="hero-greet" id="h-greet">ברוך הבא</div>
+    <div class="hero-name" id="h-name">ר' ישראל</div>
+    <div class="hero-nasi" id="h-nasi">בנשיאות ראש הישיבה שליט"א</div>
+    <div class="hero-date" id="h-date">פרשת בלק | יום ד' | כ"ה סיון תשפ"ו</div>
   </div>
 
   <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-cell">
-      <div class="stat-num">12</div>
-      <div class="stat-lbl" id="s1">סיומים שלי</div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-n" id="st-mine">12</div>
+      <div class="stat-l" id="stl-mine">סיומים שלי</div>
     </div>
-    <div class="stat-cell">
-      <div class="stat-num">847</div>
-      <div class="stat-lbl" id="s2">בקהילה</div>
+    <div class="stat">
+      <div class="stat-n">847</div>
+      <div class="stat-l" id="stl-comm">בקהילה</div>
     </div>
-    <div class="stat-cell">
-      <div class="stat-num">18</div>
-      <div class="stat-lbl" id="s3">ימי לימוד</div>
+    <div class="stat">
+      <div class="stat-n" id="st-streak">18</div>
+      <div class="stat-l" id="stl-streak">ימי לימוד</div>
     </div>
   </div>
 
-  <!-- ── PAGE: DASHBOARD ── -->
+  <!-- ══ DASHBOARD ══ -->
   <div class="page active" id="page-dashboard">
 
-    <div class="sec-label" id="sl-today">לימוד היום</div>
-    <div class="today-card">
-      <div class="today-card-header">
-        <div class="today-card-title" id="tc-title">הלימוד שלי להיום</div>
-        <div class="today-card-date" id="tc-date">יום ד' | כ"ה סיון</div>
+    <div class="sec" id="sec-today">לימוד היום</div>
+    <div class="today">
+      <div class="today-hdr">
+        <div class="today-title" id="td-title">הלימוד שלי להיום</div>
+        <div class="today-date" id="td-date">יום ד' | כ"ה סיון</div>
       </div>
-      <div class="today-item">
-        <div class="today-item-text" id="ti1">שניים מקרא ואחד תרגום – פ' בלק פסוק כב–לה</div>
+      <div class="today-row">
+        <div class="today-txt" id="td1">שניים מקרא ואחד תרגום – פ' בלק, פסוק כב–לה</div>
         <button class="mark-btn done" id="mb1">✓ נלמד</button>
       </div>
-      <div class="today-item">
-        <div class="today-item-text" id="ti2">תהילים יומי – מזמורים כה–לב</div>
-        <button class="mark-btn" id="mb2" onclick="markDone(this,'mb2')">סמן ✓</button>
+      <div class="today-row">
+        <div class="today-txt" id="td2">תהילים יומי – מזמורים כה–לב (יום ד')</div>
+        <button class="mark-btn" id="mb2" onclick="markDone(this)">סמן ✓</button>
       </div>
-      <div class="today-item">
-        <div class="today-item-text" id="ti3">ח"י פרקים משניות – ב"מ פ"ד–ז</div>
-        <button class="mark-btn" id="mb3" onclick="markDone(this,'mb3')">סמן ✓</button>
+      <div class="today-row">
+        <div class="today-txt" id="td3">ח"י פרקים משניות – מסכת בבא מציעא פ"ד–ז</div>
+        <button class="mark-btn" id="mb3" onclick="markDone(this)">סמן ✓</button>
       </div>
-      <div class="today-item">
-        <div class="today-item-text" id="ti4">דף גמרא – בבא בתרא דף לב</div>
-        <button class="mark-btn" id="mb4" onclick="markDone(this,'mb4')">סמן ✓</button>
+      <div class="today-row">
+        <div class="today-txt" id="td4">דף גמרא – בבא בתרא דף לב</div>
+        <button class="mark-btn" id="mb4" onclick="markDone(this)">סמן ✓</button>
+      </div>
+      <div class="today-row">
+        <div class="today-txt" id="td5">לקוטי מוהר"ן – תורה י"ב</div>
+        <button class="mark-btn" id="mb5" onclick="markDone(this)">סמן ✓</button>
       </div>
     </div>
 
-    <div class="sec-label" id="sl-subj">המקצועות שלי</div>
-    <div class="subjects-grid">
+    <div class="sec" id="sec-prog">התקדמות מהירה</div>
+    <div class="subj-grid">
+      <!-- חומש תורה -->
       <div class="subj-card">
-        <div class="subj-card-top">
-          <div>
-            <div class="subj-name" id="sn1">שניים מקרא ואחד תרגום</div>
-            <div class="subj-where" id="sw1">פ' בלק | פסוק לה מתוך צח</div>
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">חומש תורה</div>
+            <div class="subj-name" id="sn-torah">שניים מקרא ואחד תרגום</div>
+            <div class="subj-where">פ' בלק | פסוק לה מתוך צח</div>
           </div>
           <div class="check-ring done" onclick="toggleCheck(this)">✓</div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:36%"></div></div>
-        <div class="prog-pct">36%</div>
+        <div class="prog-row"><span class="prog-pct">36%</span><span class="prog-cnt">פ' בלק מתוך ס"ד</span></div>
       </div>
-
+      <!-- תהילים -->
       <div class="subj-card">
-        <div class="subj-card-top">
-          <div>
-            <div class="subj-name" id="sn2">תהילים יומי</div>
-            <div class="subj-where" id="sw2">יום ד' | מזמורים כה–לב</div>
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">תהילים</div>
+            <div class="subj-name">תהילים יומי</div>
+            <div class="subj-where">יום ד' | מזמורים כה–לב</div>
           </div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
-        <div class="prog-track"><div class="prog-fill" style="width:62%"></div></div>
-        <div class="prog-pct">62%</div>
+        <div class="prog-track"><div class="prog-fill" style="width:72%"></div></div>
+        <div class="prog-row"><span class="prog-pct">72%</span><span class="prog-cnt">מזמור קז מתוך ק"נ</span></div>
       </div>
-
+      <!-- משניות -->
       <div class="subj-card">
-        <div class="subj-card-top">
-          <div>
-            <div class="subj-name" id="sn3">ח"י פרקים משניות</div>
-            <div class="subj-where" id="sw3">ב"מ פ"ד | 12 מתוך 18 פרקים</div>
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">משניות</div>
+            <div class="subj-name">ח"י פרקים ליום</div>
+            <div class="subj-where">ב"מ פ"ד | 12 מתוך 18</div>
           </div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:78%"></div></div>
-        <div class="prog-pct">78%</div>
+        <div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">פרק לב מתוך ס"ג</span></div>
       </div>
-
+      <!-- גמרא -->
       <div class="subj-card">
-        <div class="subj-card-top">
-          <div>
-            <div class="subj-name" id="sn4">דף גמרא</div>
-            <div class="subj-where" id="sw4">בבא בתרא | דף לב</div>
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">גמרא</div>
+            <div class="subj-name">דף יומי</div>
+            <div class="subj-where">בבא בתרא | דף לב</div>
           </div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:22%"></div></div>
-        <div class="prog-pct">22%</div>
+        <div class="prog-row"><span class="prog-pct">22%</span><span class="prog-cnt">דף לב מתוך קע"ו</span></div>
       </div>
     </div>
   </div>
 
-  <!-- ── PAGE: SIYUMIM ── -->
+  <!-- ══ SUBJECTS ══ -->
+  <div class="page" id="page-subjects">
+    <div class="cat-tabs" id="cat-tabs">
+      <button class="cat-tab active" onclick="filterCat('all',this)" id="ct-all">הכל</button>
+      <button class="cat-tab" onclick="filterCat('torah',this)" id="ct-torah">חומש תורה</button>
+      <button class="cat-tab" onclick="filterCat('nach',this)" id="ct-nach">נ"ך</button>
+      <button class="cat-tab" onclick="filterCat('mishna',this)" id="ct-mishna">משניות</button>
+      <button class="cat-tab" onclick="filterCat('gemara',this)" id="ct-gemara">גמרא</button>
+      <button class="cat-tab" onclick="filterCat('chassidus',this)" id="ct-chas">חסידות</button>
+      <button class="cat-tab" onclick="filterCat('zohar',this)" id="ct-zohar">זוהר</button>
+      <button class="cat-tab" onclick="filterCat('other',this)" id="ct-other">אחר</button>
+    </div>
+
+    <div class="subj-grid" id="all-subjects">
+
+      <!-- חומש תורה -->
+      <div class="subj-card" data-cat="torah">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">חומש תורה</div>
+            <div class="subj-name">שניים מקרא ואחד תרגום</div>
+            <div class="subj-where">פ' בלק | 4.57 פעמים</div>
+          </div>
+          <div class="check-ring done" onclick="toggleCheck(this)">✓</div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:36%"></div></div>
+        <div class="prog-row"><span class="prog-pct">36%</span><span class="prog-cnt">סיום מחזור 5</span></div>
+      </div>
+
+      <div class="subj-card" data-cat="torah">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">חומש תורה</div>
+            <div class="subj-name">דרש התנ"ך – תורה</div>
+            <div class="subj-where">פ' בלק | פעם ב'</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:55%"></div></div>
+        <div class="prog-row"><span class="prog-pct">55%</span><span class="prog-cnt">33.74%</span></div>
+      </div>
+
+      <!-- נ"ך -->
+      <div class="subj-card" data-cat="nach">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">נ"ך</div>
+            <div class="subj-name">תהילים יומי</div>
+            <div class="subj-where">יום ד' | 96.91% הושלם</div>
+          </div>
+          <div class="check-ring done" onclick="toggleCheck(this)">✓</div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:97%"></div></div>
+        <div class="prog-row"><span class="prog-pct">97%</span><span class="prog-cnt">מחזור ב'</span></div>
+      </div>
+
+      <div class="subj-card" data-cat="nach">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">נ"ך</div>
+            <div class="subj-name">דרש התנ"ך – נ"ך</div>
+            <div class="subj-where">פעם ב' | 87.04%</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:87%"></div></div>
+        <div class="prog-row"><span class="prog-pct">87%</span><span class="prog-cnt">מדרש רבה</span></div>
+      </div>
+
+      <!-- משניות -->
+      <div class="subj-card" data-cat="mishna">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">משניות</div>
+            <div class="subj-name">ח"י פרקים ליום</div>
+            <div class="subj-where">ב"מ פ"ד | מחזור 2</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:78%"></div></div>
+        <div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">ש"ס בבלי מחזור ב'</span></div>
+      </div>
+
+      <!-- גמרא -->
+      <div class="subj-card" data-cat="gemara">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">גמרא בבלי</div>
+            <div class="subj-name">דף יומי</div>
+            <div class="subj-where">בבא בתרא | דף לב</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:22%"></div></div>
+        <div class="prog-row"><span class="prog-pct">22%</span><span class="prog-cnt">מחזור ב'</span></div>
+      </div>
+
+      <div class="subj-card" data-cat="gemara">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">גמרא ירושלמי</div>
+            <div class="subj-name">ש"ס ירושלמי</div>
+            <div class="subj-where">מסכת שבת</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:34%"></div></div>
+        <div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">34.55%</span></div>
+      </div>
+
+      <!-- חסידות -->
+      <div class="subj-card" data-cat="chassidus">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">חסידות</div>
+            <div class="subj-name">לקוטי מוהר"ן</div>
+            <div class="subj-where">תורה יב | פעם א'</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:60%"></div></div>
+        <div class="prog-row"><span class="prog-pct">60%</span><span class="prog-cnt">תנינא</span></div>
+      </div>
+
+      <div class="subj-card" data-cat="chassidus">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">חסידות</div>
+            <div class="subj-name">שיחות הר"ן</div>
+            <div class="subj-where">פעם א'</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:45%"></div></div>
+        <div class="prog-row"><span class="prog-pct">45%</span><span class="prog-cnt">סיפורי מעשיות</span></div>
+      </div>
+
+      <!-- זוהר -->
+      <div class="subj-card" data-cat="zohar">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">זוהר</div>
+            <div class="subj-name">תיקון זוהר</div>
+            <div class="subj-where">תיקון מב | פעם ב'</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:66%"></div></div>
+        <div class="prog-row"><span class="prog-pct">66%</span><span class="prog-cnt">תיקון מב מתוך ע'</span></div>
+      </div>
+
+      <!-- אחר -->
+      <div class="subj-card" data-cat="other">
+        <div class="subj-top">
+          <div class="subj-info">
+            <div class="subj-cat">ספר המידות</div>
+            <div class="subj-name">ספר המידות</div>
+            <div class="subj-where">פעם א'</div>
+          </div>
+          <div class="check-ring" onclick="toggleCheck(this)"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:50%"></div></div>
+        <div class="prog-row"><span class="prog-pct">50%</span><span class="prog-cnt">חלק ב'</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SIYUMIM ══ -->
   <div class="page" id="page-siyumim">
-    <div class="sec-label" id="sl-my">הסיומים שהשלמתי</div>
-
-    <div class="siyum-item">
-      <div class="siyum-icon">📖</div>
-      <div>
-        <div class="siyum-name" id="sy1n">סיום מסכת ברכות</div>
-        <div class="siyum-date" id="sy1d">כ' אדר תשפ"ו</div>
+    <div class="sec" id="sec-siy">הסיומים שהשלמתי</div>
+    <div class="siyum-list">
+      <div class="siyum-item">
+        <div class="siyum-icon">📖</div>
+        <div class="siyum-body">
+          <div class="siyum-name">שניים מקרא ואחד תרגום – מחזור ד'</div>
+          <div class="siyum-sub">חומש תורה | 4 מחזורים שלמים</div>
+        </div>
+        <div class="siyum-date">תשפ"ב</div>
       </div>
-    </div>
-    <div class="siyum-item">
-      <div class="siyum-icon">📜</div>
-      <div>
-        <div class="siyum-name" id="sy2n">סיום ספר תהילים</div>
-        <div class="siyum-date" id="sy2d">ר"ח ניסן תשפ"ו</div>
+      <div class="siyum-item">
+        <div class="siyum-icon">📜</div>
+        <div class="siyum-body">
+          <div class="siyum-name">ש"ס בבלי – מחזור א'</div>
+          <div class="siyum-sub">גמרא | כל המסכתות</div>
+        </div>
+        <div class="siyum-date">ה' ניסן תשפ"ג</div>
       </div>
-    </div>
-    <div class="siyum-item">
-      <div class="siyum-icon">✡️</div>
-      <div>
-        <div class="siyum-name" id="sy3n">שניים מקרא – ספר בראשית</div>
-        <div class="siyum-date" id="sy3d">כ"ה חשון תשפ"ו</div>
+      <div class="siyum-item">
+        <div class="siyum-icon">✡️</div>
+        <div class="siyum-body">
+          <div class="siyum-name">ספר תהילים – מחזור ב'</div>
+          <div class="siyum-sub">נ"ך | תהילים</div>
+        </div>
+        <div class="siyum-date">א' תשרי תשפ"ד</div>
+      </div>
+      <div class="siyum-item">
+        <div class="siyum-icon">🕯️</div>
+        <div class="siyum-body">
+          <div class="siyum-name">לקוטי מוהר"ן – מחזור א'</div>
+          <div class="siyum-sub">חסידות | תנינא</div>
+        </div>
+        <div class="siyum-date">י"ח שבט תשפ"ד</div>
+      </div>
+      <div class="siyum-item">
+        <div class="siyum-icon">📗</div>
+        <div class="siyum-body">
+          <div class="siyum-name">ש"ס ירושלמי – סדר זרעים</div>
+          <div class="siyum-sub">גמרא ירושלמי</div>
+        </div>
+        <div class="siyum-date">כ"ג אלול תשפ"ד</div>
       </div>
     </div>
   </div>
 
-  <!-- ── PAGE: ADMIN ── -->
+  <!-- ══ ADMIN ══ -->
   <div class="page" id="page-admin">
-    <div class="sec-label" id="sl-admin">דוח קהילתי – היכל הקודש</div>
+    <div class="sec" id="sec-adm">דוח קהילתי – היכל הקודש</div>
     <div class="admin-grid">
       <div class="admin-card">
         <div class="admin-num">847</div>
@@ -645,200 +566,181 @@
         <div class="admin-lbl" id="al4">קרובים לסיום</div>
       </div>
     </div>
-
-    <div class="sec-label" id="sl-near">קרובים לסיום – לעידוד</div>
-    <div class="leaderboard-item">
-      <div>
-        <div class="leaderboard-name" id="lb1n">ר' שלמה כהן</div>
-        <div class="leaderboard-sub" id="lb1s">מסכת שבת</div>
-      </div>
+    <div class="sec" id="sec-near">קרובים לסיום – לעידוד</div>
+    <div class="leader-item">
+      <div><div class="leader-name">ר' שלמה כהן</div><div class="leader-sub">מסכת שבת | ש"ס בבלי</div></div>
       <div class="pct-badge">94%</div>
     </div>
-    <div class="leaderboard-item">
-      <div>
-        <div class="leaderboard-name" id="lb2n">ר' מנחם לוי</div>
-        <div class="leaderboard-sub" id="lb2s">ספר תהילים</div>
-      </div>
+    <div class="leader-item">
+      <div><div class="leader-name">ר' מנחם לוי</div><div class="leader-sub">ספר תהילים | מחזור ג'</div></div>
       <div class="pct-badge">91%</div>
     </div>
-    <div class="leaderboard-item">
-      <div>
-        <div class="leaderboard-name" id="lb3n">ר' יצחק גולד</div>
-        <div class="leaderboard-sub" id="lb3s">שניים מקרא – ויקרא</div>
-      </div>
+    <div class="leader-item">
+      <div><div class="leader-name">ר' יצחק גולד</div><div class="leader-sub">שניים מקרא – ויקרא</div></div>
       <div class="pct-badge">88%</div>
+    </div>
+    <div class="leader-item">
+      <div><div class="leader-name">ר' אברהם שטרן</div><div class="leader-sub">לקוטי מוהר"ן – מחזור ב'</div></div>
+      <div class="pct-badge">85%</div>
     </div>
   </div>
 
-  <div class="footer" id="ft">
-    © היכל הקודש ברסלב | מערכת סיומים | כל הזכויות שמורות
-  </div>
+  <div class="footer" id="ft">© היכל הקודש ברסלב | מערכת סיומים | כל הזכויות שמורות</div>
 </div>
 
-<!-- MOBILE BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <button class="bnav-btn active" onclick="showPage('dashboard',this)" id="bn-dash">
+<!-- MOBILE NAV -->
+<div class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mob-btn active" onclick="showPage('dashboard',this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span id="bn0">בית</span>
+      <span id="mb-home">בית</span>
     </button>
-    <button class="bnav-btn" onclick="showPage('siyumim',this)" id="bn-siy">
+    <button class="mob-btn" onclick="showPage('subjects',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span id="mb-subj">מקצועות</span>
+    </button>
+    <button class="mob-btn" onclick="showPage('siyumim',this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-      <span id="bn1">סיומים</span>
+      <span id="mb-siy">סיומים</span>
     </button>
-    <button class="bnav-btn" onclick="showPage('admin',this)" id="bn-adm">
+    <button class="mob-btn" onclick="showPage('admin',this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-      <span id="bn2">מנהל</span>
+      <span id="mb-adm">מנהל</span>
     </button>
   </div>
 </div>
 
 <script>
-// ── TRANSLATIONS ──
-const T = {
-  he: {
-    'll-title':'היכל הקודש', 'll-sub':'מערכת סיומים | בנשיאות ראש הישיבה שליט"א',
-    'll-enter':'כניסה', 'll-or':'— או —', 'll-reg':'הרשמה חדשה',
+const T={
+  he:{
+    'lo-title':'היכל הקודש','lo-sub':'מערכת סיומים | בנשיאות ראש הישיבה שליט"א',
+    'lo-enter':'כניסה','lo-or':'— או —','lo-reg':'הרשמה חדשה',
     'h-sub':'מערכת סיומים | בנשיאות ראש הישיבה שליט"א',
-    'hg':'ברוך הבא','ht':'ר\' ישראל','hn':'בנשיאות ראש הישיבה שליט"א',
-    'hd':'פרשת בלק | יום ד\' | כ"ה סיון תשפ"ו',
-    's1':'סיומים שלי','s2':'בקהילה','s3':'ימי לימוד',
-    'nav-dashboard':'לוח בקרה','nav-siyumim':'הסיומים שלי','nav-admin':'מנהל',
-    'sl-today':'לימוד היום','tc-title':'הלימוד שלי להיום','tc-date':'יום ד\' | כ"ה סיון',
-    'ti1':'שניים מקרא ואחד תרגום – פ\' בלק פסוק כב–לה',
-    'ti2':'תהילים יומי – מזמורים כה–לב',
-    'ti3':'ח"י פרקים משניות – ב"מ פ"ד–ז',
-    'ti4':'דף גמרא – בבא בתרא דף לב',
-    'mb2':'סמן ✓','mb3':'סמן ✓','mb4':'סמן ✓',
-    'sl-subj':'המקצועות שלי',
-    'sn1':'שניים מקרא ואחד תרגום','sw1':'פ\' בלק | פסוק לה מתוך צח',
-    'sn2':'תהילים יומי','sw2':'יום ד\' | מזמורים כה–לב',
-    'sn3':'ח"י פרקים משניות','sw3':'ב"מ פ"ד | 12 מתוך 18 פרקים',
-    'sn4':'דף גמרא','sw4':'בבא בתרא | דף לב',
-    'sl-my':'הסיומים שהשלמתי',
-    'sy1n':'סיום מסכת ברכות','sy1d':'כ\' אדר תשפ"ו',
-    'sy2n':'סיום ספר תהילים','sy2d':'ר"ח ניסן תשפ"ו',
-    'sy3n':'שניים מקרא – ספר בראשית','sy3d':'כ"ה חשון תשפ"ו',
-    'sl-admin':'דוח קהילתי – היכל הקודש',
+    'h-greet':'ברוך הבא','h-name':'ר\' ישראל','h-nasi':'בנשיאות ראש הישיבה שליט"א',
+    'h-date':'פרשת בלק | יום ד\' | כ"ה סיון תשפ"ו',
+    'stl-mine':'סיומים שלי','stl-comm':'בקהילה','stl-streak':'ימי לימוד',
+    'n-dash':'לוח בקרה','n-subj':'המקצועות שלי','n-siy':'הסיומים שלי','n-adm':'מנהל',
+    'sec-today':'לימוד היום','td-title':'הלימוד שלי להיום','td-date':'יום ד\' | כ"ה סיון',
+    'td1':'שניים מקרא ואחד תרגום – פ\' בלק, פסוק כב–לה',
+    'td2':'תהילים יומי – מזמורים כה–לב (יום ד\')',
+    'td3':'ח"י פרקים משניות – מסכת בבא מציעא פ"ד–ז',
+    'td4':'דף גמרא – בבא בתרא דף לב',
+    'td5':'לקוטי מוהר"ן – תורה י"ב',
+    'sec-prog':'התקדמות מהירה',
+    'ct-all':'הכל','ct-torah':'חומש תורה','ct-nach':'נ"ך','ct-mishna':'משניות',
+    'ct-gemara':'גמרא','ct-chas':'חסידות','ct-zohar':'זוהר','ct-other':'אחר',
+    'sec-siy':'הסיומים שהשלמתי',
+    'sec-adm':'דוח קהילתי – היכל הקודש','sec-near':'קרובים לסיום – לעידוד',
     'al1':'סיומים כולל','al2':'לומדים פעילים','al3':'סיומים החודש','al4':'קרובים לסיום',
-    'sl-near':'קרובים לסיום – לעידוד',
-    'lb1n':'ר\' שלמה כהן','lb1s':'מסכת שבת',
-    'lb2n':'ר\' מנחם לוי','lb2s':'ספר תהילים',
-    'lb3n':'ר\' יצחק גולד','lb3s':'שניים מקרא – ויקרא',
     'ft':'© היכל הקודש ברסלב | מערכת סיומים',
-    'bn0':'בית','bn1':'סיומים','bn2':'מנהל',
+    'mb-home':'בית','mb-subj':'מקצועות','mb-siy':'סיומים','mb-adm':'מנהל',
     dir:'rtl'
   },
-  yi: {
-    'll-title':'היכל הקודש', 'll-sub':'סיומים סיסטעם | אונטערן נשיאות פון ראש הישיבה שליט"א',
-    'll-enter':'אריינגיין', 'll-or':'— אדער —', 'll-reg':'נייע רעגיסטראציע',
+  yi:{
+    'lo-title':'היכל הקודש','lo-sub':'סיומים סיסטעם | אונטערן נשיאות פון ראש הישיבה שליט"א',
+    'lo-enter':'אריינגיין','lo-or':'— אדער —','lo-reg':'נייע רעגיסטראציע',
     'h-sub':'סיומים סיסטעם | אונטערן נשיאות פון ראש הישיבה שליט"א',
-    'hg':'ברוך הבא','ht':'ר\' ישראל','hn':'אונטערן נשיאות פון ראש הישיבה שליט"א',
-    'hd':'פרשת בלק | מיטוואך | כ"ה סיון תשפ"ו',
-    's1':'מיינע סיומים','s2':'קהילה','s3':'לערן טעג',
-    'nav-dashboard':'דאשבאָרד','nav-siyumim':'מיינע סיומים','nav-admin':'מנהל',
-    'sl-today':'היינטיגע לערנען','tc-title':'מיין לערנען היינט','tc-date':'מיטוואך | כ"ה סיון',
-    'ti1':'שניים מקרא – פ\' בלק פסוק כב–לה',
-    'ti2':'תהילים טעגליך – מזמורים כה–לב',
-    'ti3':'י"ח פרקים משניות – ב"מ פ"ד–ז',
-    'ti4':'דף יומי – בבא בתרא דף לב',
-    'mb2':'מארקיר ✓','mb3':'מארקיר ✓','mb4':'מארקיר ✓',
-    'sl-subj':'מיינע לערנפעכער',
-    'sn1':'שניים מקרא','sw1':'פ\' בלק | פסוק לה פון צח',
-    'sn2':'תהילים טעגליך','sw2':'מיטוואך | מזמורים כה–לב',
-    'sn3':'י"ח פרקים משניות','sw3':'ב"מ פ"ד | 12 פון 18',
-    'sn4':'דף יומי','sw4':'בבא בתרא | דף לב',
-    'sl-my':'מיינע פארטיגע סיומים',
-    'sy1n':'סיום מסכת ברכות','sy1d':'כ\' אדר תשפ"ו',
-    'sy2n':'סיום ספר תהילים','sy2d':'ר"ח ניסן תשפ"ו',
-    'sy3n':'שניים מקרא – ספר בראשית','sy3d':'כ"ה חשון תשפ"ו',
-    'sl-admin':'קהילה דוח – היכל הקודש',
+    'h-greet':'ברוך הבא','h-name':'ר\' ישראל','h-nasi':'אונטערן נשיאות פון ראש הישיבה שליט"א',
+    'h-date':'פרשת בלק | מיטוואך | כ"ה סיון תשפ"ו',
+    'stl-mine':'מיינע סיומים','stl-comm':'קהילה','stl-streak':'לערן טעג',
+    'n-dash':'דאשבאָרד','n-subj':'מיינע לערנפעכער','n-siy':'מיינע סיומים','n-adm':'מנהל',
+    'sec-today':'היינטיגע לערנען','td-title':'מיין לערנען היינט','td-date':'מיטוואך | כ"ה סיון',
+    'td1':'שניים מקרא – פ\' בלק, פסוק כב–לה',
+    'td2':'תהילים טעגליך – מזמורים כה–לב',
+    'td3':'י"ח פרקים משניות – ב"מ פ"ד–ז',
+    'td4':'דף יומי – בבא בתרא דף לב',
+    'td5':'לקוטי מוהר"ן – תורה י"ב',
+    'sec-prog':'שנעלע פארטשריט',
+    'ct-all':'אלעס','ct-torah':'חומש תורה','ct-nach':'נ"ך','ct-mishna':'משניות',
+    'ct-gemara':'גמרא','ct-chas':'חסידות','ct-zohar':'זוהר','ct-other':'אנדערש',
+    'sec-siy':'מיינע פארטיגע סיומים',
+    'sec-adm':'קהילה דוח – היכל הקודש','sec-near':'נאענט צו סיום',
     'al1':'אלע סיומים','al2':'אקטיווע לערנערס','al3':'סיומים דעם חודש','al4':'נאענט צו סיום',
-    'sl-near':'נאענט צו סיום – צו אנמוטיגן',
-    'lb1n':'ר\' שלמה כהן','lb1s':'מסכת שבת',
-    'lb2n':'ר\' מנחם לוי','lb2s':'ספר תהילים',
-    'lb3n':'ר\' יצחק גולד','lb3s':'שניים מקרא – ויקרא',
     'ft':'© היכל הקודש ברסלב | סיומים סיסטעם',
-    'bn0':'היים','bn1':'סיומים','bn2':'מנהל',
+    'mb-home':'היים','mb-subj':'לערנפעכער','mb-siy':'סיומים','mb-adm':'מנהל',
     dir:'rtl'
   },
-  en: {
-    'lEmail':'Email','lPass':'Password',
-    'll-title':'Heichal Hakodesh','ll-sub':'Siyumim System | Under the leadership of the Rosh Yeshiva Shlita',
-    'll-enter':'Login','ll-or':'— or —','ll-reg':'Register',
+  en:{
+    'lo-title':'Heichal Hakodesh','lo-sub':'Siyumim System | Under the leadership of the Rosh Yeshiva Shlita',
+    'lo-enter':'Login','lo-or':'— or —','lo-reg':'Register',
     'h-sub':'Siyumim System | Under the leadership of the Rosh Yeshiva Shlita',
-    'hg':'Welcome','ht':'R\' Yisrael','hn':'Under the leadership of the Rosh Yeshiva Shlita',
-    'hd':'Parshas Balak | Wednesday | 25 Sivan 5786',
-    's1':'My Siyumim','s2':'Community','s3':'Learning Days',
-    'nav-dashboard':'Dashboard','nav-siyumim':'My Siyumim','nav-admin':'Admin',
-    'sl-today':'Today\'s Learning','tc-title':'My Learning Today','tc-date':'Wednesday | 25 Sivan',
-    'ti1':'Shnayim Mikra – Parshas Balak 22–35',
-    'ti2':'Daily Tehillim – Chapters 25–32',
-    'ti3':'18 Perakim Mishna – B.M. ch. 4–7',
-    'ti4':'Daf Gemara – Bava Basra 32',
-    'mb2':'Mark ✓','mb3':'Mark ✓','mb4':'Mark ✓',
-    'sl-subj':'My Subjects',
-    'sn1':'Shnayim Mikra','sw1':'Parshas Balak | Pasuk 35 of 98',
-    'sn2':'Daily Tehillim','sw2':'Wednesday | Chapters 25–32',
-    'sn3':'18 Perakim Mishna','sw3':'B.M. ch. 4 | 12 of 18',
-    'sn4':'Daf Gemara','sw4':'Bava Basra | Daf 32',
-    'sl-my':'My Completed Siyumim',
-    'sy1n':'Siyum Maseches Brachos','sy1d':'20 Adar 5786',
-    'sy2n':'Siyum Sefer Tehillim','sy2d':'Rosh Chodesh Nisan 5786',
-    'sy3n':'Shnayim Mikra – Bereishis','sy3d':'25 Cheshvan 5786',
-    'sl-admin':'Community Report – Heichal Hakodesh',
-    'al1':'Total Siyumim','al2':'Active Learners','al3':'This Month','al4':'Near Completion',
-    'sl-near':'Near Completion – Encourage Them',
-    'lb1n':'R\' Shlomo Cohen','lb1s':'Maseches Shabbos',
-    'lb2n':'R\' Menachem Levy','lb2s':'Sefer Tehillim',
-    'lb3n':'R\' Yitzchak Gold','lb3s':'Shnayim Mikra – Vayikra',
+    'h-greet':'Welcome','h-name':'R\' Yisrael','h-nasi':'Under the leadership of the Rosh Yeshiva Shlita',
+    'h-date':'Parshas Balak | Wednesday | 25 Sivan 5786',
+    'stl-mine':'My Siyumim','stl-comm':'Community','stl-streak':'Learning Days',
+    'n-dash':'Dashboard','n-subj':'My Subjects','n-siy':'My Siyumim','n-adm':'Admin',
+    'sec-today':'Today\'s Learning','td-title':'My Learning Today','td-date':'Wednesday | 25 Sivan',
+    'td1':'Shnayim Mikra – Parshas Balak, Pasuk 22–35',
+    'td2':'Daily Tehillim – Chapters 25–32 (Wednesday)',
+    'td3':'18 Perakim Mishna – Bava Metzia ch. 4–7',
+    'td4':'Daf Gemara – Bava Basra 32',
+    'td5':'Likkutei Moharan – Torah 12',
+    'sec-prog':'Quick Progress',
+    'ct-all':'All','ct-torah':'Chumash Torah','ct-nach':'Nach','ct-mishna':'Mishnah',
+    'ct-gemara':'Gemara','ct-chas':'Chassidus','ct-zohar':'Zohar','ct-other':'Other',
+    'sec-siy':'My Completed Siyumim',
+    'sec-adm':'Community Report – Heichal Hakodesh','sec-near':'Near Completion',
+    'al1':'Total Siyumim','al2':'Active Learners','al3':'This Month\'s Siyumim','al4':'Near Completion',
     'ft':'© Heichal Hakodesh Breslev | Siyumim System',
-    'bn0':'Home','bn1':'Siyumim','bn2':'Admin',
+    'mb-home':'Home','mb-subj':'Subjects','mb-siy':'Siyumim','mb-adm':'Admin',
     dir:'ltr'
   }
 };
 
-let curLang = 'he';
+let curLang='he';
 
-function switchLang(lang, btn) {
-  curLang = lang;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    const m = {'he':'עב','yi':'אידיש','en':'EN'};
-    if (b.textContent.trim() === m[lang] || b.textContent.trim() === {'he':'עברית','yi':'אידיש','en':'English'}[lang]) b.classList.add('active');
+function switchLang(lang,btn){
+  curLang=lang;
+  document.querySelectorAll('.ll-btn,.hl-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ll-btn,.hl-btn').forEach(b=>{
+    const map={he:['עברית','עב'],yi:['אידיש','אידיש'],en:['English','EN']};
+    if(map[lang]&&map[lang].includes(b.textContent.trim()))b.classList.add('active');
   });
   btn.classList.add('active');
-  const t = T[lang];
-  document.documentElement.setAttribute('dir', t.dir);
-  for (const [k, v] of Object.entries(t)) {
-    if (k === 'dir') continue;
-    const el = document.getElementById(k);
-    if (el) el.textContent = v;
+  const t=T[lang];
+  document.documentElement.setAttribute('dir',t.dir);
+  document.documentElement.setAttribute('lang',lang==='en'?'en':lang==='yi'?'yi':'he');
+  for(const[k,v]of Object.entries(t)){
+    if(k==='dir')continue;
+    const el=document.getElementById(k);
+    if(el)el.textContent=v;
   }
 }
 
-function doLogin() {
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'flex';
+function doLogin(){
+  document.getElementById('loginOverlay').style.display='none';
+  document.getElementById('app').style.display='flex';
 }
 
-function showPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn, .bnav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  if (btn) btn.classList.add('active');
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn,.mob-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  // sync desktop nav
+  const map={dashboard:'n-dash',subjects:'n-subj',siyumim:'n-siy',admin:'n-adm'};
+  const nb=document.getElementById(map[name]);
+  if(nb)nb.classList.add('active');
 }
 
-function markDone(btn) {
-  const labels = {he:'✓ נלמד', yi:'✓ געלערנט', en:'✓ Done'};
-  btn.textContent = labels[curLang] || '✓ נלמד';
+function markDone(btn){
+  const labels={he:'✓ נלמד',yi:'✓ געלערנט',en:'✓ Done'};
+  btn.textContent=labels[curLang]||'✓ נלמד';
   btn.classList.add('done');
-  btn.onclick = null;
+  btn.onclick=null;
 }
 
-function toggleCheck(el) {
+function toggleCheck(el){
   el.classList.toggle('done');
-  el.textContent = el.classList.contains('done') ? '✓' : '';
+  el.textContent=el.classList.contains('done')?'✓':'';
+}
+
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#all-subjects .subj-card').forEach(c=>{
+    if(cat==='all'||c.dataset.cat===cat){c.style.display=''}
+    else{c.style.display='none'}
+  });
 }
 </script>
 </body>
