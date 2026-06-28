@@ -1220,13 +1220,34 @@ function getParsha(){
   const w=Math.floor((d-(new Date(d.getFullYear(),0,1)))/(7*864e5));
   return 'פרשת '+parshiot[w%parshiot.length];
 }
-function setDate(){
-  const heb=getJewishDate(),day=getDayHe(),parsha=getParsha();
-  const str=parsha+' | יום '+day+' | '+heb;
+async function setDate(){
+  const heb=getJewishDate(),day=getDayHe();
+  // Set immediately with local fallback
+  const localStr='יום '+day+' | '+heb;
   const hd=document.getElementById('hero-date');
   const td=document.getElementById('today-date');
-  if(hd)hd.textContent=str;
+  if(hd)hd.textContent=localStr;
   if(td)td.textContent='יום '+day+' | '+heb;
+  // Then fetch real parsha from Hebcal
+  try {
+    const today=new Date();
+    const dow=today.getDay();
+    const daysToShabbat=dow===6?7:6-dow;
+    const shab=new Date(today);
+    shab.setDate(today.getDate()+daysToShabbat);
+    const ds=shab.toISOString().split('T')[0];
+    const res=await fetch(`https://www.hebcal.com/hebcal?v=1&cfg=json&s=on&year=now&month=x&maj=off&min=off&mod=off&nx=off&ss=off&mf=off&c=off&geo=none&M=on&i=off&leyning=off&start=${ds}&end=${ds}`);
+    const data=await res.json();
+    const p=data.items?.find(i=>i.category==='parashat');
+    if(p){
+      const pname=p.hebrew||p.title;
+      const str='פרשת '+p.title?.split(' ').pop()+' | יום '+day+' | '+heb;
+      if(hd)hd.textContent=str;
+      if(td)td.textContent='יום '+day+' | '+heb;
+      // also store for today card
+      window._currentParsha = p.title?.split(' ').pop()||'';
+    }
+  } catch(e){ console.log('Hebcal date error',e); }
 }
 
 // ═══ LOGIN ═══
