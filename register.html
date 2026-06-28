@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>היכל הקודש – בקשת הצטרפות</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0D1B2A;--navy2:#162032;--gold:#B8972E;--gold2:#D4AF50;--gold3:#F0D080;--cream:#F5F0E8;--cream2:#EDE6D6;--white:#fff;--text:#1A1A1A;--muted:#6B6355;--red2:#c0392b;--green:#2d7a3a;--radius:10px;--font:'Frank Ruhl Libre',Georgia,serif}
+html,body{min-height:100%;font-family:var(--font);background:var(--cream);color:var(--text)}
+
+/* HEADER */
+.hdr{background:var(--navy);border-bottom:2px solid var(--gold);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.hdr-brand{display:flex;align-items:center;gap:14px}
+.hdr-logo{width:40px;filter:drop-shadow(0 0 8px rgba(212,175,80,.4))}
+.hdr-title{font-size:17px;font-weight:700;color:var(--gold3);line-height:1.15}
+.hdr-sub{font-size:11px;color:rgba(240,208,128,.45);font-weight:300}
+.hdr-link{font-size:13px;color:rgba(240,208,128,.6);text-decoration:none;padding:6px 14px;border:1px solid rgba(184,151,46,.3);border-radius:var(--radius);transition:all .15s}
+.hdr-link:hover{color:var(--gold3);border-color:var(--gold)}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,var(--navy2) 0%,#1e3350 60%,var(--navy2) 100%);padding:40px 28px 32px;text-align:center;border-bottom:1px solid rgba(184,151,46,.2)}
+.hero-icon{font-size:48px;margin-bottom:14px}
+.hero-title{font-size:28px;font-weight:900;color:var(--gold3);margin-bottom:6px}
+.hero-sub{font-size:15px;color:rgba(240,208,128,.6);font-weight:300;max-width:500px;margin:0 auto}
+
+/* MAIN */
+.main{max-width:600px;margin:0 auto;padding:32px 20px 60px}
+
+/* FORM */
+.form-card{background:var(--white);border:1px solid var(--cream2);border-radius:16px;padding:32px;margin-bottom:20px}
+.form-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.form-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+.form-section{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-bottom:12px}
+.form-row{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.form-label span{color:var(--red2)}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--cream2);border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--gold)}
+.form-input.error{border-color:var(--red2)}
+.form-hint{font-size:11px;color:var(--muted);margin-top:4px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--cream2);border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--text);outline:none;cursor:pointer;transition:border-color .2s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B8972E' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center}
+.form-select:focus{border-color:var(--gold)}
+.form-divider{border:none;border-top:1px solid var(--cream2);margin:20px 0}
+.form-textarea{width:100%;padding:11px 14px;border:1.5px solid var(--cream2);border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;resize:vertical;min-height:80px}
+.form-textarea:focus{border-color:var(--gold)}
+
+/* SUBJECTS */
+.subj-check-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--cream2);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:border-color .2s}
+.subj-check-row:hover{border-color:rgba(184,151,46,.4)}
+.subj-check-row.selected{border-color:var(--gold);background:rgba(184,151,46,.05)}
+.subj-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--cream2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:12px;color:transparent}
+.subj-check-row.selected .subj-check{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.subj-check-name{font-size:14px;font-weight:700;color:var(--navy);flex:1}
+.subj-check-cat{font-size:11px;color:var(--gold);background:rgba(184,151,46,.1);padding:2px 7px;border-radius:6px}
+
+/* SUBMIT */
+.submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border:none;border-radius:var(--radius);font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:8px}
+.submit-btn:hover{opacity:.88}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* SUCCESS */
+.success-card{background:var(--white);border:2px solid rgba(45,122,58,.3);border-radius:16px;padding:48px 32px;text-align:center;display:none}
+.success-card.show{display:block}
+.success-icon{font-size:60px;margin-bottom:16px}
+.success-title{font-size:22px;font-weight:700;color:var(--green);margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.back-link{display:inline-block;padding:10px 24px;border:1.5px solid var(--cream2);border-radius:var(--radius);color:var(--muted);text-decoration:none;font-size:14px;transition:all .15s}
+.back-link:hover{border-color:var(--navy);color:var(--navy)}
+
+/* INFO BOX */
+.info-box{background:rgba(184,151,46,.07);border:1px solid rgba(184,151,46,.2);border-radius:12px;padding:16px 18px;margin-bottom:24px}
+.info-box-title{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px}
+.info-box-text{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:24px;font-size:12px;color:var(--muted)}
+
+/* ERROR */
+.field-error{font-size:11px;color:var(--red2);margin-top:4px;display:none}
+.field-error.show{display:block}
+
+@media(max-width:500px){
+  .form-grid{grid-template-columns:1fr}
+  .hdr{padding:0 16px}
+  .main{padding:20px 14px 40px}
+  .form-card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <img class="hdr-logo" src="https://breslevcenter.com/images/icons/breslev_favicon.png" alt="" onerror="this.style.display='none'">
+    <div>
+      <div class="hdr-title">היכל הקודש – ברסלב</div>
+      <div class="hdr-sub">מערכת סיומים</div>
+    </div>
+  </div>
+  <a href="/" class="hdr-link">כניסה למערכת</a>
+</header>
+
+<div class="hero">
+  <div class="hero-icon">📖</div>
+  <div class="hero-title">הצטרפות למערכת הסיומים</div>
+  <div class="hero-sub">מלא את הטופס ובקשתך תגיע למנהל הקהילה לאישור</div>
+</div>
+
+<main class="main">
+
+  <!-- SUCCESS -->
+  <div class="success-card" id="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">בקשתך נשלחה בהצלחה!</div>
+    <div class="success-sub">
+      תודה על פנייתך.<br>
+      המנהל יקבל הודעה ויצור איתך קשר בהקדם.<br>
+      לאחר האישור תקבל מייל עם פרטי הכניסה למערכת.
+    </div>
+    <a href="/" class="back-link">חזרה לדף הבית</a>
+  </div>
+
+  <!-- FORM -->
+  <div id="main-form">
+    <div class="info-box">
+      <div class="info-box-title">✡ בנשיאות ראש הישיבה שליט"א</div>
+      <div class="info-box-text">מערכת הסיומים של קהילת היכל הקודש מאפשרת לכל אחד לתכנן, לעקוב ולחגוג את הסיומים שלו בכל חלקי התורה. לאחר אישור הבקשה תקבל גישה מלאה למערכת.</div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">פרטים אישיים</div>
+      <div class="form-sub">אנא מלא את פרטיך האישיים. שדות עם * הם חובה.</div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">שם פרטי <span>*</span></label>
+          <input class="form-input" type="text" id="r-fname" placeholder="ישראל">
+          <div class="field-error" id="err-fname">נא להזין שם פרטי</div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">שם משפחה <span>*</span></label>
+          <input class="form-input" type="text" id="r-lname" placeholder="כהן">
+          <div class="field-error" id="err-lname">נא להזין שם משפחה</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">כינוי / שם לתצוגה במערכת</label>
+        <input class="form-input" type="text" id="r-display" placeholder='ר" ישראל כהן'>
+        <div class="form-hint">אם ריק – ישתמש בשם המלא</div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">אימייל <span>*</span></label>
+        <input class="form-input" type="email" id="r-email" placeholder="israel@example.com">
+        <div class="field-error" id="err-email">נא להזין כתובת אימייל תקינה</div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">טלפון <span>*</span></label>
+        <input class="form-input" type="tel" id="r-phone" placeholder="050-0000000">
+        <div class="field-error" id="err-phone">נא להזין מספר טלפון</div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">עיר מגורים</label>
+        <input class="form-input" type="text" id="r-city" placeholder="ירושלים">
+      </div>
+
+      <hr class="form-divider">
+      <div class="form-section">שפה מועדפת</div>
+
+      <div class="form-row">
+        <select class="form-select" id="r-lang">
+          <option value="he">עברית</option>
+          <option value="yi">אידיש</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">מקצועות לימוד</div>
+      <div class="form-sub">סמן את המקצועות שברצונך לעקוב אחריהם. ניתן לשנות בכל עת לאחר ההצטרפות.</div>
+
+      <div id="subjects-checkboxes">
+        <div class="subj-check-row selected" onclick="toggleSubj(this)">
+          <div class="subj-check">✓</div>
+          <div class="subj-check-name">שניים מקרא ואחד תרגום</div>
+          <div class="subj-check-cat">חומש תורה</div>
+        </div>
+        <div class="subj-check-row selected" onclick="toggleSubj(this)">
+          <div class="subj-check">✓</div>
+          <div class="subj-check-name">תהילים יומי</div>
+          <div class="subj-check-cat">נ"ך</div>
+        </div>
+        <div class="subj-check-row selected" onclick="toggleSubj(this)">
+          <div class="subj-check">✓</div>
+          <div class="subj-check-name">ח"י פרקים משניות</div>
+          <div class="subj-check-cat">משניות</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">דף יומי – ש"ס בבלי</div>
+          <div class="subj-check-cat">גמרא</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">ש"ס ירושלמי</div>
+          <div class="subj-check-cat">גמרא</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">לקוטי מוהר"ן</div>
+          <div class="subj-check-cat">חסידות</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">שיחות הר"ן</div>
+          <div class="subj-check-cat">חסידות</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">תיקון זוהר</div>
+          <div class="subj-check-cat">זוהר</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">דרש התנ"ך</div>
+          <div class="subj-check-cat">נ"ך</div>
+        </div>
+        <div class="subj-check-row" onclick="toggleSubj(this)">
+          <div class="subj-check"></div>
+          <div class="subj-check-name">ספר המידות</div>
+          <div class="subj-check-cat">אחר</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">הערות נוספות</div>
+      <div class="form-sub">כל מידע נוסף שתרצה לשתף עם המנהל</div>
+      <div class="form-row">
+        <textarea class="form-textarea" id="r-notes" placeholder="לדוגמה: אני מכיר את ר' ישראל מהקהילה..."></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()" id="submit-btn">
+      שלח בקשת הצטרפות
+    </button>
+
+    <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">
+      כבר יש לך חשבון? <a href="/" style="color:var(--gold);text-decoration:none">כניסה למערכת</a>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  © היכל הקודש ברסלב | מערכת סיומים | בנשיאות ראש הישיבה שליט"א
+</footer>
+
+<script>
+function toggleSubj(row) {
+  row.classList.toggle('selected');
+  const check = row.querySelector('.subj-check');
+  check.textContent = row.classList.contains('selected') ? '✓' : '';
+}
+
+function validate() {
+  let ok = true;
+  const fields = [
+    {id:'r-fname', err:'err-fname', check: v => v.trim().length > 0},
+    {id:'r-lname', err:'err-lname', check: v => v.trim().length > 0},
+    {id:'r-email', err:'err-email', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)},
+    {id:'r-phone', err:'err-phone', check: v => v.trim().length >= 9},
+  ];
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const err = document.getElementById(f.err);
+    if (!f.check(el.value)) {
+      el.classList.add('error');
+      err.classList.add('show');
+      ok = false;
+    } else {
+      el.classList.remove('error');
+      err.classList.remove('show');
+    }
+  });
+  return ok;
+}
+
+function submitForm() {
+  if (!validate()) return;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'שולח...';
+
+  // Collect selected subjects
+  const selected = [...document.querySelectorAll('.subj-check-row.selected')]
+    .map(r => r.querySelector('.subj-check-name').textContent);
+
+  // Simulate API call
+  setTimeout(() => {
+    document.getElementById('main-form').style.display = 'none';
+    document.getElementById('success-card').classList.add('show');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, 1200);
+}
+
+// Clear error on input
+document.querySelectorAll('.form-input').forEach(el => {
+  el.addEventListener('input', () => {
+    el.classList.remove('error');
+    const errId = 'err-' + el.id.replace('r-','');
+    const err = document.getElementById(errId);
+    if (err) err.classList.remove('show');
+  });
+});
+</script>
+</body>
+</html>
