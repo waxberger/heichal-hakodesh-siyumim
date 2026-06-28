@@ -816,10 +816,10 @@ button{font-family:var(--font-serif)}
         <div class="today-title">הלימוד שלי להיום</div>
         <div class="today-date" id="today-date">טוען...</div>
       </div>
-      <div class="today-row">
+      <div class="today-row" style="cursor:pointer" onclick="openShnayimModal()">
         <div class="today-icon">📜</div>
-        <div class="today-txt">שניים מקרא ואחד תרגום – פ' חקת, פסוק א–כ</div>
-        <button class="mark-btn done">✓ נלמד</button>
+        <div class="today-txt" id="sm-today-txt">שניים מקרא ואחד תרגום – <span style="color:var(--gold2)">לחץ לפרטים</span></div>
+        <button class="mark-btn" id="sm-today-btn" onclick="event.stopPropagation();openShnayimModal()">פתח ▸</button>
       </div>
       <div class="today-row">
         <div class="today-icon">📖</div>
@@ -847,7 +847,7 @@ button{font-family:var(--font-serif)}
     <div class="subj-grid">
       <div class="subj-card">
         <div class="subj-top">
-          <div><div class="subj-cat-tag">חומש תורה</div><div class="subj-name">שניים מקרא ואחד תרגום</div><div class="subj-where">פ' חקת | פסוק כ מתוך צח</div></div>
+          <div><div class="subj-name">שניים מקרא ואחד תרגום</div><div class="subj-where">פ' חקת | פסוק כ מתוך צח</div></div>
           <div class="check-ring done" onclick="toggleCheck(this)">✓</div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:36%"></div></div>
@@ -855,7 +855,7 @@ button{font-family:var(--font-serif)}
       </div>
       <div class="subj-card">
         <div class="subj-top">
-          <div><div class="subj-cat-tag">נ"ך</div><div class="subj-name">תהילים יומי</div><div class="subj-where">יום ראשון | מזמורים א–יח</div></div>
+          <div><div class="subj-name">תהילים יומי</div><div class="subj-where">יום ראשון | מזמורים א–יח</div></div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:97%"></div></div>
@@ -863,7 +863,7 @@ button{font-family:var(--font-serif)}
       </div>
       <div class="subj-card">
         <div class="subj-top">
-          <div><div class="subj-cat-tag">משניות</div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">ב"ק פ"ח | 12/18</div></div>
+          <div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">ב"ק פ"ח | 12/18</div></div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:78%"></div></div>
@@ -871,7 +871,7 @@ button{font-family:var(--font-serif)}
       </div>
       <div class="subj-card">
         <div class="subj-top">
-          <div><div class="subj-cat-tag">גמרא</div><div class="subj-name">דף יומי</div><div class="subj-where">בבא קמא | דף צ"ב</div></div>
+          <div><div class="subj-name">דף יומי</div><div class="subj-where">בבא קמא | דף צ"ב</div></div>
           <div class="check-ring" onclick="toggleCheck(this)"></div>
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:52%"></div></div>
@@ -893,17 +893,15 @@ button{font-family:var(--font-serif)}
       <button class="cat-tab" onclick="filterCat('other',this)">אחר</button>
     </div>
     <div class="subj-grid" id="all-subjects">
-      <div class="subj-card" data-cat="torah"><div class="subj-top"><div><div class="subj-cat-tag">חומש תורה</div><div class="subj-name">שניים מקרא ואחד תרגום</div><div class="subj-where">4.57 מחזורים</div></div><div class="check-ring done" onclick="toggleCheck(this)">✓</div></div><div class="prog-track"><div class="prog-fill" style="width:36%"></div></div><div class="prog-row"><span class="prog-pct">36%</span><span class="prog-cnt">מחזור 5</span></div></div>
-      <div class="subj-card" data-cat="torah"><div class="subj-top"><div><div class="subj-cat-tag">חומש תורה</div><div class="subj-name">דרש התנ"ך – תורה</div><div class="subj-where">33.74%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">פעם ב'</span></div></div>
-      <div class="subj-card" data-cat="nach"><div class="subj-top"><div><div class="subj-cat-tag">נ"ך</div><div class="subj-name">תהילים יומי</div><div class="subj-where">96.91%</div></div><div class="check-ring done" onclick="toggleCheck(this)">✓</div></div><div class="prog-track"><div class="prog-fill" style="width:97%"></div></div><div class="prog-row"><span class="prog-pct">97%</span><span class="prog-cnt">מחזור ב'</span></div></div>
-      <div class="subj-card" data-cat="nach"><div class="subj-top"><div><div class="subj-cat-tag">נ"ך</div><div class="subj-name">דרש התנ"ך – נ"ך</div><div class="subj-where">87.04%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:87%"></div></div><div class="prog-row"><span class="prog-pct">87%</span><span class="prog-cnt">מדרש רבה</span></div></div>
-      <div class="subj-card" data-cat="mishna"><div class="subj-top"><div><div class="subj-cat-tag">משניות</div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">מחזור 2</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div><div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">ש"ס מחזור ב'</span></div></div>
-      <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-cat-tag">גמרא בבלי</div><div class="subj-name">דף יומי</div><div class="subj-where">בבא קמא | דף צ"ב</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:52%"></div></div><div class="prog-row"><span class="prog-pct">52%</span><span class="prog-cnt">מחזור ב'</span></div></div>
-      <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-cat-tag">גמרא ירושלמי</div><div class="subj-name">ש"ס ירושלמי</div><div class="subj-where">34.55%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">מסכת שבת</span></div></div>
-      <div class="subj-card" data-cat="chassidus"><div class="subj-top"><div><div class="subj-cat-tag">חסידות</div><div class="subj-name">לקוטי מוהר"ן</div><div class="subj-where">תורה ו'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:60%"></div></div><div class="prog-row"><span class="prog-pct">60%</span><span class="prog-cnt">תנינא</span></div></div>
-      <div class="subj-card" data-cat="chassidus"><div class="subj-top"><div><div class="subj-cat-tag">חסידות</div><div class="subj-name">שיחות הר"ן</div><div class="subj-where">פעם א'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:45%"></div></div><div class="prog-row"><span class="prog-pct">45%</span><span class="prog-cnt">סיפורי מעשיות</span></div></div>
-      <div class="subj-card" data-cat="zohar"><div class="subj-top"><div><div class="subj-cat-tag">זוהר</div><div class="subj-name">תיקון זוהר</div><div class="subj-where">תיקון מב</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:66%"></div></div><div class="prog-row"><span class="prog-pct">66%</span><span class="prog-cnt">פעם ב'</span></div></div>
-      <div class="subj-card" data-cat="other"><div class="subj-top"><div><div class="subj-cat-tag">אחר</div><div class="subj-name">ספר המידות</div><div class="subj-where">פעם א'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:50%"></div></div><div class="prog-row"><span class="prog-pct">50%</span><span class="prog-cnt">חלק ב'</span></div></div>
+      <div class="subj-where">33.74%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">פעם ב'</span></div></div>
+      <div class="subj-where">87.04%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:87%"></div></div><div class="prog-row"><span class="prog-pct">87%</span><span class="prog-cnt">מדרש רבה</span></div></div>
+      <div class="subj-card" data-cat="mishna"><div class="subj-top"><div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">מחזור 2</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div><div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">ש"ס מחזור ב'</span></div></div>
+      <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-name">דף יומי</div><div class="subj-where">בבא קמא | דף צ"ב</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:52%"></div></div><div class="prog-row"><span class="prog-pct">52%</span><span class="prog-cnt">מחזור ב'</span></div></div>
+      <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-name">ש"ס ירושלמי</div><div class="subj-where">34.55%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">מסכת שבת</span></div></div>
+      <div class="subj-card" data-cat="chassidus"><div class="subj-top"><div><div class="subj-name">לקוטי מוהר"ן</div><div class="subj-where">תורה ו'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:60%"></div></div><div class="prog-row"><span class="prog-pct">60%</span><span class="prog-cnt">תנינא</span></div></div>
+      <div class="subj-card" data-cat="chassidus"><div class="subj-top"><div><div class="subj-name">שיחות הר"ן</div><div class="subj-where">פעם א'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:45%"></div></div><div class="prog-row"><span class="prog-pct">45%</span><span class="prog-cnt">סיפורי מעשיות</span></div></div>
+      <div class="subj-card" data-cat="zohar"><div class="subj-top"><div><div class="subj-name">תיקון זוהר</div><div class="subj-where">תיקון מב</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:66%"></div></div><div class="prog-row"><span class="prog-pct">66%</span><span class="prog-cnt">פעם ב'</span></div></div>
+      <div class="subj-card" data-cat="other"><div class="subj-top"><div><div class="subj-name">ספר המידות</div><div class="subj-where">פעם א'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:50%"></div></div><div class="prog-row"><span class="prog-pct">50%</span><span class="prog-cnt">חלק ב'</span></div></div>
     </div>
   </div>
 
@@ -1168,9 +1166,9 @@ const USERS={
 };
 let subjects=[
   {id:1,name:'שניים מקרא ואחד תרגום',cat:'torah',desc:'חומש כולו לפי פרשות השבוע',units:54,unitType:'פרשה',freq:'weekly',active:true,isDefault:true},
-  {id:2,name:'דרש התנ"ך – תורה',cat:'torah',desc:'דרש על כל פסוק בתורה',units:5845,unitType:'פסוק',freq:'daily',active:true,isDefault:false},
+  
   {id:3,name:'תהילים יומי',cat:'nach',desc:'150 מזמורים לפי ימי השבוע',units:150,unitType:'מזמור',freq:'daily',active:true,isDefault:true},
-  {id:4,name:'דרש התנ"ך – נ"ך',cat:'nach',desc:'',units:0,unitType:'פסוק',freq:'daily',active:true,isDefault:false},
+  
   {id:5,name:'ח"י פרקים משניות',cat:'mishna',desc:'18 פרקים כל יום',units:524,unitType:'פרק',freq:'daily',active:true,isDefault:true},
   {id:6,name:'דף יומי – ש"ס בבלי',cat:'gemara',desc:'',units:2711,unitType:'דף',freq:'daily',active:true,isDefault:false},
   {id:7,name:'ש"ס ירושלמי',cat:'gemara-y',desc:'',units:1760,unitType:'דף',freq:'daily',active:true,isDefault:false},
@@ -1438,5 +1436,326 @@ function closeModal(id){document.getElementById(id).classList.remove('show');}
 function switchLang(lang,btn){document.querySelectorAll('.lo-lang-btn,.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
 </script>
+
+<!-- ═══ MODAL: שניים מקרא ואחד תרגום ═══ -->
+<div class="modal-overlay" id="modal-shnayim">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('modal-shnayim')">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:22px">📜</span>
+      <div class="modal-title" style="margin-bottom:0">שניים מקרא ואחד תרגום</div>
+    </div>
+    <div class="modal-sub" id="sm-parsha-sub">טוען פרשת השבוע...</div>
+
+    <!-- PARSHA HEADER -->
+    <div id="sm-parsha-header" style="background:var(--navy);border-radius:var(--radius2);padding:16px 20px;margin-bottom:18px;display:none">
+      <div style="font-size:11px;color:var(--gold);font-family:var(--font-sans);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">פרשת השבוע</div>
+      <div style="font-size:22px;font-weight:900;color:var(--gold3)" id="sm-parsha-name">פינחס</div>
+      <div style="font-size:12px;color:rgba(245,217,138,.5);margin-top:3px;font-family:var(--font-sans)" id="sm-parsha-verses"></div>
+    </div>
+
+    <!-- DAYS OF WEEK -->
+    <div style="margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans);margin-bottom:10px">לימוד לפי ימות השבוע</div>
+      <div id="sm-days-grid" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- MEFARSHIM -->
+    <div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans)">מפרשי התורה</div>
+        <button class="btn sm" style="padding:5px 12px;font-size:12px;border:1.5px solid var(--cream2);background:transparent;color:var(--muted)" onclick="showAddMefaresh()">+ הוסף מפרש</button>
+      </div>
+      <div id="sm-mefarshim-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px"></div>
+    </div>
+
+    <!-- REMINDER -->
+    <div id="sm-reminder-box" style="display:none;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:var(--radius);padding:13px 16px;margin-bottom:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px">⏰ תזכורת לרש"י</div>
+      <div style="font-size:13px;color:var(--muted)" id="sm-reminder-text"></div>
+    </div>
+
+    <!-- ADD MEFARESH INLINE -->
+    <div id="sm-add-mefaresh" style="display:none;background:var(--cream);border:1.5px solid var(--cream2);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px">הוסף מפרש חדש</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:160px">
+          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px;font-family:var(--font-sans)">שם המפרש</label>
+          <input class="form-input" type="text" id="new-mefaresh-name" placeholder="לדוגמה: אור החיים">
+        </div>
+        <div style="flex:1;min-width:120px">
+          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px;font-family:var(--font-sans)">קיצור</label>
+          <input class="form-input" type="text" id="new-mefaresh-short" placeholder="אוה"ח" maxlength="6">
+        </div>
+        <button class="btn primary sm" onclick="addMefaresh()" style="flex-shrink:0">הוסף</button>
+        <button class="btn secondary sm" onclick="document.getElementById('sm-add-mefaresh').style.display='none'" style="flex-shrink:0">ביטול</button>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div style="background:var(--cream);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:700;color:var(--navy)">התקדמות השבוע</div>
+        <div style="font-size:12px;color:var(--gold);font-weight:700;font-family:var(--font-sans)" id="sm-progress-pct">0%</div>
+      </div>
+      <div class="prog-track" style="height:8px"><div class="prog-fill" id="sm-progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn primary" onclick="saveShnayimSettings()">שמור הגדרות</button>
+      <button class="btn secondary" onclick="closeModal('modal-shnayim')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ שניים מקרא ═══
+const DAY_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const ALIYA_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שביעי','מפטיר'];
+
+let smState = {
+  parsha: null,
+  aliyot: null,
+  // which days are done (0=Sun..6=Sat)
+  doneDays: JSON.parse(localStorage.getItem('sm_doneDays') || '[]'),
+  mefarshim: JSON.parse(localStorage.getItem('sm_mefarshim') || JSON.stringify([
+    {id:'rashi',   name:'רש"י',        short:'רש"י',   enabled:true,  done:false},
+    {id:'ramban',  name:'רמב"ן',       short:'רמב"ן',  enabled:false, done:false},
+    {id:'ibnezra', name:'אבן עזרא',    short:'אב"ע',   enabled:false, done:false},
+    {id:'sforno',  name:'ספורנו',      short:'ספורנו', enabled:false, done:false},
+    {id:'orhachaim',name:'אור החיים',  short:'אוה"ח',  enabled:false, done:false},
+    {id:'keliyakar',name:'כלי יקר',    short:'כ"י',    enabled:false, done:false},
+    {id:'baalhaturim',name:'בעל הטורים',short:'ב"ה',  enabled:false, done:false},
+  ])),
+};
+
+function saveSmState() {
+  localStorage.setItem('sm_doneDays', JSON.stringify(smState.doneDays));
+  localStorage.setItem('sm_mefarshim', JSON.stringify(smState.mefarshim));
+}
+
+async function openShnayimModal() {
+  document.getElementById('modal-shnayim').classList.add('show');
+  await loadParsha();
+}
+
+async function loadParsha() {
+  try {
+    // Get upcoming Shabbat date
+    const today = new Date();
+    const day = today.getDay();
+    const daysUntilShabbat = day === 6 ? 7 : 6 - day;
+    const shabbat = new Date(today);
+    shabbat.setDate(today.getDate() + daysUntilShabbat);
+    const dateStr = shabbat.toISOString().split('T')[0];
+
+    const res = await fetch(
+      `https://www.hebcal.com/hebcal?v=1&cfg=json&s=on&year=now&month=x&maj=off&min=off&mod=off&nx=off&ss=off&mf=off&c=off&geo=none&M=on&i=off&leyning=on&start=${dateStr}&end=${dateStr}`
+    );
+    const data = await res.json();
+    const parshaItem = data.items?.find(i => i.category === 'parashat');
+
+    if (parshaItem) {
+      smState.parsha = parshaItem.hebrew || parshaItem.title;
+      smState.aliyot = parshaItem.leyning;
+      renderShnayimModal(parshaItem);
+    } else {
+      document.getElementById('sm-parsha-sub').textContent = 'לא נמצאה פרשת השבוע (ייתכן שבת חג)';
+    }
+  } catch(e) {
+    document.getElementById('sm-parsha-sub').textContent = 'שגיאה בטעינת פרשת השבוע';
+    console.error(e);
+  }
+}
+
+function renderShnayimModal(parshaItem) {
+  const name = parshaItem.hebrew || parshaItem.title?.replace('Parashat ','פרשת ');
+  document.getElementById('sm-parsha-sub').textContent = 'לימוד שניים מקרא ואחד תרגום לפרשת ' + (parshaItem.title?.split(' ').pop() || '');
+  document.getElementById('sm-parsha-name').textContent = name;
+
+  const l = parshaItem.leyning || {};
+  const verses = l.torah || '';
+  document.getElementById('sm-parsha-verses').textContent = verses;
+  document.getElementById('sm-parsha-header').style.display = '';
+
+  // Build days grid – day N reads aliya N+1
+  // Sun=aliya 1, Mon=aliya 2, Tue=aliya 3, Wed=aliya 4, Thu=aliya 5, Fri=aliya 6, Shab=aliya 7
+  const grid = document.getElementById('sm-days-grid');
+  const todayDay = new Date().getDay();
+  grid.innerHTML = '';
+
+  for (let d = 0; d < 7; d++) {
+    const aliyaNum = (d + 1).toString();
+    const aliyaText = l[aliyaNum] || '';
+    const isDone = smState.doneDays.includes(d);
+    const isToday = d === todayDay;
+
+    const row = document.createElement('div');
+    row.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);border:1.5px solid ${isToday ? 'rgba(201,168,76,.5)' : 'var(--cream2)'};background:${isDone ? 'rgba(30,107,58,.06)' : isToday ? 'rgba(201,168,76,.05)' : 'var(--white)'};transition:all .2s;cursor:pointer`;
+    row.onclick = () => toggleDay(d);
+    row.id = 'sm-day-'+d;
+
+    row.innerHTML = `
+      <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${isDone?'var(--green2)':'rgba(201,168,76,.4)'};background:${isDone?'var(--green2)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:12px;color:${isDone?'#fff':'var(--gold)'};font-weight:700;flex-shrink:0;transition:all .2s">
+        ${isDone ? '✓' : d+1}
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px">
+          יום ${DAY_NAMES[d]}
+          ${isToday ? '<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 8px;border-radius:8px;font-family:var(--font-sans)">היום</span>' : ''}
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--font-sans)">
+          עליה ${ALIYA_NAMES[d]}${aliyaText ? ' | ' + aliyaText : ''}
+        </div>
+      </div>
+      <div style="font-size:11px;color:${isDone?'var(--green2)':'var(--muted2)'};font-family:var(--font-sans);font-weight:${isDone?'700':'400'}">
+        ${isDone ? '✓ נלמד' : 'לסימון'}
+      </div>
+    `;
+    grid.appendChild(row);
+  }
+
+  renderMefarshim();
+  updateProgress();
+  updateReminder();
+}
+
+function toggleDay(d) {
+  const idx = smState.doneDays.indexOf(d);
+  if (idx >= 0) smState.doneDays.splice(idx, 1);
+  else smState.doneDays.push(d);
+  saveSmState();
+  // Re-render just this row
+  const l = smState.aliyot || {};
+  const aliyaNum = (d + 1).toString();
+  const aliyaText = l[aliyaNum] || '';
+  const isDone = smState.doneDays.includes(d);
+  const isToday = d === new Date().getDay();
+  const row = document.getElementById('sm-day-'+d);
+  if (row) {
+    row.style.border = `1.5px solid ${isToday ? 'rgba(201,168,76,.5)' : isDone ? 'rgba(30,107,58,.3)' : 'var(--cream2)'}`;
+    row.style.background = isDone ? 'rgba(30,107,58,.06)' : isToday ? 'rgba(201,168,76,.05)' : 'var(--white)';
+    row.querySelector('div').style.cssText += `;border-color:${isDone?'var(--green2)':'rgba(201,168,76,.4)'};background:${isDone?'var(--green2)':'transparent'};color:${isDone?'#fff':'var(--gold)'}`;
+    row.querySelector('div').textContent = isDone ? '✓' : (d+1).toString();
+    row.querySelectorAll('div')[2].textContent = isDone ? '✓ נלמד' : 'לסימון';
+    row.querySelectorAll('div')[2].style.color = isDone ? 'var(--green2)' : 'var(--muted2)';
+  }
+  updateProgress();
+  updateReminder();
+}
+
+function renderMefarshim() {
+  const grid = document.getElementById('sm-mefarshim-grid');
+  grid.innerHTML = smState.mefarshim.map((m, i) => `
+    <div onclick="toggleMefaresh(${i})" style="
+      padding:10px 14px;border-radius:var(--radius);
+      border:1.5px solid ${m.enabled ? 'rgba(201,168,76,.5)' : 'var(--cream2)'};
+      background:${m.enabled ? 'rgba(201,168,76,.07)' : 'var(--white)'};
+      cursor:pointer;transition:all .2s;text-align:center;
+    ">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">${m.name}</div>
+      ${m.enabled ? `
+        <div onclick="event.stopPropagation();toggleMefareshDone(${i})" style="
+          margin-top:6px;padding:4px 10px;border-radius:8px;font-size:11px;font-family:var(--font-sans);
+          background:${m.done?'rgba(30,107,58,.15)':'rgba(201,168,76,.1)'};
+          color:${m.done?'var(--green2)':'var(--gold)'};
+          border:1px solid ${m.done?'rgba(30,107,58,.3)':'rgba(201,168,76,.2)'};
+          cursor:pointer;font-weight:700;
+        ">${m.done?'✓ סיימתי':'סמן כסיום'}</div>
+      ` : `<div style="font-size:11px;color:var(--muted2);font-family:var(--font-sans)">לחץ להפעלה</div>`}
+    </div>
+  `).join('');
+}
+
+function toggleMefaresh(i) {
+  smState.mefarshim[i].enabled = !smState.mefarshim[i].enabled;
+  if (!smState.mefarshim[i].enabled) smState.mefarshim[i].done = false;
+  saveSmState();
+  renderMefarshim();
+  updateReminder();
+}
+
+function toggleMefareshDone(i) {
+  smState.mefarshim[i].done = !smState.mefarshim[i].done;
+  saveSmState();
+  renderMefarshim();
+  updateReminder();
+}
+
+function showAddMefaresh() {
+  document.getElementById('sm-add-mefaresh').style.display = '';
+  document.getElementById('new-mefaresh-name').focus();
+}
+
+function addMefaresh() {
+  const name = document.getElementById('new-mefaresh-name').value.trim();
+  const short = document.getElementById('new-mefaresh-short').value.trim() || name.substring(0,4);
+  if (!name) return;
+  smState.mefarshim.push({id:'custom_'+Date.now(), name, short, enabled:true, done:false});
+  saveSmState();
+  document.getElementById('sm-add-mefaresh').style.display='none';
+  document.getElementById('new-mefaresh-name').value='';
+  document.getElementById('new-mefaresh-short').value='';
+  renderMefarshim();
+}
+
+function updateProgress() {
+  const done = smState.doneDays.length;
+  const pct = Math.round((done / 7) * 100);
+  document.getElementById('sm-progress-pct').textContent = pct + '%';
+  document.getElementById('sm-progress-fill').style.width = pct + '%';
+}
+
+function updateReminder() {
+  const box = document.getElementById('sm-reminder-box');
+  const rashi = smState.mefarshim.find(m => m.id === 'rashi');
+  if (!rashi?.enabled) { box.style.display='none'; return; }
+
+  // Count remaining days
+  const todayDay = new Date().getDay();
+  const daysDone = smState.doneDays.length;
+  const daysLeft = 7 - daysDone;
+  const rashiDone = rashi.done;
+
+  if (rashiDone && daysDone === 7) { box.style.display='none'; return; }
+
+  box.style.display = '';
+  let msg = '';
+  if (!rashiDone && todayDay >= 4) { // Thu or Fri
+    const rashiLeft = smState.doneDays.filter(d => d < todayDay).length;
+    msg = `נשארו עוד ${7 - daysDone} ימים ללימוד ורש"י טרם הושלם – כדאי להשלים לפני שבת!`;
+  } else if (!rashiDone) {
+    msg = `זכור ללמוד עם רש"י על כל פרשה. עדיין לא סימנת סיום רש"י השבוע.`;
+  } else {
+    msg = `✓ השלמת את רש"י השבוע! כל הכבוד.`;
+    box.style.background = 'rgba(30,107,58,.07)';
+    box.style.borderColor = 'rgba(39,146,79,.25)';
+    box.querySelector('div').style.color = 'var(--green2)';
+  }
+  document.getElementById('sm-reminder-text').textContent = msg;
+}
+
+function saveShnayimSettings() {
+  saveSmState();
+  closeModal('modal-shnayim');
+  showAlert('page-dashboard', 'הגדרות שניים מקרא נשמרו', 'success');
+}
+
+function showAlert(pageId, msg, type='success') {
+  const page = document.getElementById(pageId);
+  if (!page) return;
+  let a = page.querySelector('.page-alert');
+  if (!a) {
+    a = document.createElement('div');
+    a.className = 'alert ' + type + ' page-alert';
+    a.innerHTML = '<span>✓</span><span class="page-alert-msg"></span>';
+    page.prepend(a);
+  }
+  a.className = 'alert ' + type + ' page-alert show';
+  a.querySelector('.page-alert-msg').textContent = msg;
+  setTimeout(() => a.classList.remove('show'), 3000);
+}
+</script>
+
 </body>
 </html>
