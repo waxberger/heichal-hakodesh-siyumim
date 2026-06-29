@@ -821,10 +821,10 @@ button{font-family:var(--font-serif)}
         <div class="today-txt" id="sm-today-txt">שניים מקרא ואחד תרגום – <span style="color:var(--gold2)">לחץ לפרטים</span></div>
         <button class="mark-btn" id="sm-today-btn" onclick="event.stopPropagation();openShnayimModal()">פתח ▸</button>
       </div>
-      <div class="today-row">
+      <div class="today-row" style="cursor:pointer" onclick="openTehillimModal()">
         <div class="today-icon">📖</div>
-        <div class="today-txt">תהילים יומי – מזמורים א–יח (יום ראשון)</div>
-        <button class="mark-btn" onclick="markDone(this)">סמן ✓</button>
+        <div class="today-txt" id="th-today-quick">תהילים יומי – <span style="color:var(--gold2)">לחץ לפרטים</span></div>
+        <button class="mark-btn" onclick="event.stopPropagation();event.preventDefault();openTehillimModal()">פתח ▸</button>
       </div>
       <div class="today-row">
         <div class="today-icon">📚</div>
