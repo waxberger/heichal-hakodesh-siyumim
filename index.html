@@ -2033,18 +2033,75 @@ const TEHILLIM_WEEKLY = {
   6: {label:'קכ–קנ',  from:120,to:150, dayName:'שבת'},
 };
 
-// Monthly division: ~5 psalms/day
-const TEHILLIM_MONTHLY = (() => {
-  const days = {};
-  let psalm = 1;
-  for (let d = 1; d <= 30; d++) {
-    const count = d === 29 ? 6 : d === 30 ? 6 : 5;
-    days[d] = {from: psalm, to: Math.min(psalm + count - 1, 150)};
-    psalm = days[d].to + 1;
-    if (psalm > 150) break;
+// Monthly division – traditional Jewish division (30 days)
+const TEHILLIM_MONTHLY = {
+  1:  {from:1,   to:9},
+  2:  {from:10,  to:17},
+  3:  {from:18,  to:22},
+  4:  {from:23,  to:28},
+  5:  {from:29,  to:34},
+  6:  {from:35,  to:38},
+  7:  {from:39,  to:43},
+  8:  {from:44,  to:48},
+  9:  {from:49,  to:54},
+  10: {from:55,  to:59},
+  11: {from:60,  to:65},
+  12: {from:66,  to:68},
+  13: {from:69,  to:71},
+  14: {from:72,  to:76},
+  15: {from:77,  to:78},
+  16: {from:79,  to:82},
+  17: {from:83,  to:87},
+  18: {from:88,  to:89},
+  19: {from:90,  to:96},
+  20: {from:97,  to:103},
+  21: {from:104, to:105},
+  22: {from:106, to:107},
+  23: {from:108, to:112},
+  24: {from:113, to:118},
+  25: {from:119, to:119},
+  26: {from:120, to:134},
+  27: {from:135, to:139},
+  28: {from:140, to:144},
+  29: {from:145, to:150},
+  30: {from:145, to:150}, // ל' חודש = כ"ט
+};
+
+// Hebrew numeral letters
+function numToHeb(n) {
+  const ones = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'];
+  const tens = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'];
+  const hundreds = ['','ק','ר','ש','ת'];
+  if (n <= 0 || n > 999) return String(n);
+  // special cases to avoid יה / יו
+  if (n === 15) return 'ט"ו';
+  if (n === 16) return 'ט"ז';
+  let result = '';
+  let h = Math.floor(n/100); n -= h*100;
+  let t = Math.floor(n/10); n -= t*10;
+  let o = n;
+  result = (hundreds[h]||'') + (tens[t]||'') + (ones[o]||'');
+  // add geresh/gershayim
+  if (result.length === 1) result += "'";
+  else result = result.slice(0,-1) + '"' + result.slice(-1);
+  return result;
+}
+
+// Get Hebrew day of month from Hebcal (cached)
+let _hebDom = null;
+async function getHebDayOfMonth() {
+  if (_hebDom !== null) return _hebDom;
+  try {
+    const today = new Date();
+    const ds = today.toISOString().split('T')[0];
+    const res = await fetch(`https://www.hebcal.com/converter?cfg=json&date=${ds}&g2h=1&strict=1`);
+    const data = await res.json();
+    _hebDom = data.hd || today.getDate();
+    return _hebDom;
+  } catch(e) {
+    return new Date().getDate();
   }
-  return days;
-})();
+}
 
 let thState = {
   mode: localStorage.getItem('th_mode') || 'weekly', // weekly|monthly|free
@@ -2071,7 +2128,7 @@ function setTehillimMode(mode, btn) {
   renderTehillimModal();
 }
 
-function renderTehillimModal() {
+async function renderTehillimModal() {
   const today = new Date();
   const dow = today.getDay(); // 0=Sun
   const dom = today.getDate(); // 1-30
@@ -2089,11 +2146,12 @@ function renderTehillimModal() {
     todayLabel = 'מזמורים ' + slot.label;
     todaySub = (toPsalm - fromPsalm + 1) + ' מזמורים · יום ' + slot.dayName;
   } else if (thState.mode === 'monthly') {
-    const dayKey = Math.min(dom, 30);
-    const slot = TEHILLIM_MONTHLY[dayKey] || {from:1,to:5};
+    const hebDom = await getHebDayOfMonth();
+    const dayKey = Math.min(hebDom, 30);
+    const slot = TEHILLIM_MONTHLY[dayKey] || {from:145,to:150};
     fromPsalm = slot.from; toPsalm = slot.to;
-    todayLabel = 'מזמורים ' + fromPsalm + '–' + toPsalm;
-    todaySub = (toPsalm - fromPsalm + 1) + ' מזמורים · יום ' + dom + ' לחודש';
+    todayLabel = 'מזמורים ' + numToHeb(fromPsalm) + '–' + numToHeb(toPsalm);
+    todaySub = (toPsalm - fromPsalm + 1) + ' מזמורים · ' + numToHeb(dayKey) + ' לחודש';
   } else {
     fromPsalm = 1; toPsalm = 150;
     todayLabel = 'כל המזמורים';
@@ -2123,8 +2181,8 @@ function renderTehillimModal() {
   for (let p = showFrom; p <= showTo; p++) {
     const btn = document.createElement('button');
     btn.className = 'th-psalm-btn' + (thState.done[p] ? ' done' : '');
-    btn.textContent = p;
-    btn.title = 'מזמור ' + p;
+    btn.textContent = numToHeb(p);
+    btn.title = 'מזמור ' + numToHeb(p);
     btn.onclick = () => togglePsalm(p);
     grid.appendChild(btn);
   }
@@ -2175,28 +2233,30 @@ function renderFullView(dow, dom, todayFrom, todayTo) {
     }
   } else if (thState.mode === 'monthly') {
     fullLabel.textContent = 'סקירת החודש';
-    for (let d = 1; d <= 30; d++) {
-      const slot = TEHILLIM_MONTHLY[d] || {from:146,to:150};
+    const hebDomFull = await getHebDayOfMonth();
+    for (let d = 1; d <= 29; d++) {
+      const slot = TEHILLIM_MONTHLY[d] || {from:145,to:150};
       let doneCnt = 0;
       for (let p = slot.from; p <= slot.to; p++) if (thState.done[p]) doneCnt++;
       const total = slot.to - slot.from + 1;
       const pct = Math.round((doneCnt/total)*100);
-      const isToday = d === dom;
+      const isToday = d === hebDomFull;
       const row = document.createElement('div');
       row.className = 'th-day-row' + (isToday?' today':'') + (pct===100?' done':'');
       row.innerHTML = `
-        <div style="width:26px;height:26px;border-radius:6px;
+        <div style="width:30px;height:26px;border-radius:6px;
           border:1.5px solid ${pct===100?'var(--green2)':isToday?'var(--gold)':'var(--cream2)'};
           background:${pct===100?'var(--green2)':'transparent'};
           display:flex;align-items:center;justify-content:center;
-          font-size:11px;font-weight:700;
+          font-size:12px;font-weight:700;font-family:var(--font-serif);
           color:${pct===100?'#fff':isToday?'var(--gold)':'var(--muted)'};
-          flex-shrink:0">${pct===100?'✓':d}</div>
+          flex-shrink:0">${pct===100?'✓':numToHeb(d)}</div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--navy)">
-            יום ${d}${isToday?' <span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
+          <div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px">
+            ${numToHeb(d)} לחודש
+            ${isToday?'<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
           </div>
-          <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">מזמורים ${slot.from}–${slot.to} · ${doneCnt}/${total}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">מזמורים ${numToHeb(slot.from)}–${numToHeb(slot.to)} · ${doneCnt}/${total}</div>
         </div>
         <div style="font-size:12px;font-weight:700;color:${pct===100?'var(--green2)':pct>0?'var(--gold)':'var(--muted2)'};font-family:var(--font-sans)">${pct}%</div>
       `;
@@ -2223,7 +2283,7 @@ function togglePsalm(p) {
   renderTehillimModal();
 }
 
-function markAllTehillimToday() {
+async function markAllTehillimToday() {
   const today = new Date();
   const dow = today.getDay();
   const dom = today.getDate();
@@ -2231,13 +2291,14 @@ function markAllTehillimToday() {
   if (thState.mode === 'weekly') {
     const s = TEHILLIM_WEEKLY[dow]; from=s.from; to=s.to;
   } else if (thState.mode === 'monthly') {
-    const s = TEHILLIM_MONTHLY[Math.min(dom,30)]; from=s.from; to=s.to;
+    const hd = await getHebDayOfMonth();
+    const s = TEHILLIM_MONTHLY[Math.min(hd,29)]; from=s.from; to=s.to;
   } else { from=1; to=150; }
   for (let p=from;p<=to;p++) thState.done[p]=true;
   saveThState(); renderTehillimModal();
 }
 
-function clearTehillimToday() {
+async function clearTehillimToday() {
   const today = new Date();
   const dow = today.getDay();
   const dom = today.getDate();
@@ -2245,7 +2306,8 @@ function clearTehillimToday() {
   if (thState.mode === 'weekly') {
     const s = TEHILLIM_WEEKLY[dow]; from=s.from; to=s.to;
   } else if (thState.mode === 'monthly') {
-    const s = TEHILLIM_MONTHLY[Math.min(dom,30)]; from=s.from; to=s.to;
+    const hd = await getHebDayOfMonth();
+    const s = TEHILLIM_MONTHLY[Math.min(hd,29)]; from=s.from; to=s.to;
   } else { from=1; to=150; }
   for (let p=from;p<=to;p++) delete thState.done[p];
   saveThState(); renderTehillimModal();
