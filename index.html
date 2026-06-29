@@ -1912,5 +1912,351 @@ function showAlert(pageId, msg, type='success') {
 }
 </script>
 
+
+<style>
+.th-mode-btn {
+  flex:1;min-width:130px;padding:12px 16px;border-radius:var(--radius2);
+  border:1.5px solid var(--cream2);background:var(--white);
+  font-family:var(--font-serif);font-size:13px;color:var(--muted);
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.th-mode-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.04)}
+.th-mode-btn.active{
+  border-color:var(--gold);background:var(--navy);color:var(--gold2);
+  box-shadow:0 2px 12px rgba(11,22,35,.15);
+}
+.th-psalm-btn {
+  aspect-ratio:1;border-radius:8px;border:1.5px solid var(--cream2);
+  background:var(--white);font-family:var(--font-sans);font-size:12px;
+  font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.th-psalm-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.05)}
+.th-psalm-btn.done{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border-color:var(--gold);box-shadow:0 1px 6px rgba(201,168,76,.3)}
+.th-psalm-btn.today-range{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.06)}
+.th-day-row{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:var(--radius);border:1.5px solid var(--cream2);background:var(--white);
+  transition:all .2s;
+}
+.th-day-row.today{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.05)}
+.th-day-row.done{border-color:rgba(30,107,58,.25);background:rgba(30,107,58,.04)}
+</style>
+
+<!-- ═══ MODAL: תהילים יומי ═══ -->
+<div class="modal-overlay" id="modal-tehillim">
+  <div class="modal" style="max-width:620px">
+    <button class="modal-close" onclick="closeModal('modal-tehillim')">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:22px">📖</span>
+      <div class="modal-title" style="margin-bottom:0">תהילים יומי</div>
+    </div>
+    <div class="modal-sub">סימון אמירת תהילים לפי סדר</div>
+
+    <!-- MODE SELECTOR -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans);margin-bottom:10px">אופן החלוקה</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="th-mode-btn active" id="th-mode-weekly" onclick="setTehillimMode('weekly',this)">
+          <div style="font-weight:700;margin-bottom:2px">לפי שבוע</div>
+          <div style="font-size:11px;opacity:.7">7 ימים · לפי מנהג</div>
+        </button>
+        <button class="th-mode-btn" id="th-mode-monthly" onclick="setTehillimMode('monthly',this)">
+          <div style="font-weight:700;margin-bottom:2px">לפי חודש</div>
+          <div style="font-size:11px;opacity:.7">30 יום · ~5 מזמורים</div>
+        </button>
+        <button class="th-mode-btn" id="th-mode-free" onclick="setTehillimMode('free',this)">
+          <div style="font-weight:700;margin-bottom:2px">סימון חופשי</div>
+          <div style="font-size:11px;opacity:.7">בחר מזמורים ידנית</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- TODAY SECTION -->
+    <div id="th-today-section" style="background:var(--navy);border-radius:var(--radius2);padding:16px 20px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:var(--gold);font-family:var(--font-sans);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">להיום</div>
+          <div style="font-size:18px;font-weight:700;color:var(--gold3)" id="th-today-label">מזמורים א–כט</div>
+          <div style="font-size:12px;color:rgba(245,217,138,.45);margin-top:2px;font-family:var(--font-sans)" id="th-today-sub">29 מזמורים · יום ראשון</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:28px;font-weight:900;color:var(--gold2);font-family:var(--font-sans)" id="th-today-pct">0%</div>
+          <div style="font-size:10px;color:rgba(245,217,138,.4);font-family:var(--font-sans)">הושלם</div>
+        </div>
+      </div>
+      <div class="prog-track" style="height:6px;background:rgba(255,255,255,.1)">
+        <div class="prog-fill" id="th-today-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- PSALMS GRID -->
+    <div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans)" id="th-grid-label">מזמורים להיום</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="markAllTehillimToday()" style="font-size:11px;padding:4px 12px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold);cursor:pointer;font-family:var(--font-sans);font-weight:700">סמן הכל ✓</button>
+          <button onclick="clearTehillimToday()" style="font-size:11px;padding:4px 12px;border-radius:8px;border:1px solid var(--cream2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-sans)">נקה</button>
+        </div>
+      </div>
+      <div id="th-psalms-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px"></div>
+    </div>
+
+    <!-- WEEKLY/MONTHLY VIEW -->
+    <div id="th-full-view" style="margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans);margin-bottom:10px" id="th-full-label">סקירת השבוע</div>
+      <div id="th-full-grid" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- OVERRIDE NOTE -->
+    <div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);padding:11px 15px;margin-bottom:18px;font-size:12px;color:var(--muted);font-family:var(--font-sans)">
+      💡 ניתן לשנות ידנית כל מזמור בכל יום, גם אם לא לפי הסדר הרגיל
+    </div>
+
+    <div class="form-actions">
+      <button class="btn primary" onclick="saveTehillimSettings()">שמור הגדרות</button>
+      <button class="btn secondary" onclick="closeModal('modal-tehillim')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ תהילים ═══
+// Weekly division (traditional)
+const TEHILLIM_WEEKLY = {
+  0: {label:'א–כט',   from:1,  to:29,  dayName:'ראשון'},
+  1: {label:'ל–נ',    from:30, to:50,  dayName:'שני'},
+  2: {label:'נא–עב',  from:51, to:72,  dayName:'שלישי'},
+  3: {label:'עג–פט',  from:73, to:89,  dayName:'רביעי'},
+  4: {label:'צ–קו',   from:90, to:106, dayName:'חמישי'},
+  5: {label:'קז–קיט', from:107,to:119, dayName:'שישי'},
+  6: {label:'קכ–קנ',  from:120,to:150, dayName:'שבת'},
+};
+
+// Monthly division: ~5 psalms/day
+const TEHILLIM_MONTHLY = (() => {
+  const days = {};
+  let psalm = 1;
+  for (let d = 1; d <= 30; d++) {
+    const count = d === 29 ? 6 : d === 30 ? 6 : 5;
+    days[d] = {from: psalm, to: Math.min(psalm + count - 1, 150)};
+    psalm = days[d].to + 1;
+    if (psalm > 150) break;
+  }
+  return days;
+})();
+
+let thState = {
+  mode: localStorage.getItem('th_mode') || 'weekly', // weekly|monthly|free
+  done: JSON.parse(localStorage.getItem('th_done') || '{}'), // {psalm_num: true}
+  lastReset: localStorage.getItem('th_lastReset') || '',
+};
+
+function saveThState() {
+  localStorage.setItem('th_mode', thState.mode);
+  localStorage.setItem('th_done', JSON.stringify(thState.done));
+  localStorage.setItem('th_lastReset', thState.lastReset);
+}
+
+function openTehillimModal() {
+  document.getElementById('modal-tehillim').classList.add('show');
+  renderTehillimModal();
+}
+
+function setTehillimMode(mode, btn) {
+  thState.mode = mode;
+  saveThState();
+  document.querySelectorAll('.th-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTehillimModal();
+}
+
+function renderTehillimModal() {
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun
+  const dom = today.getDate(); // 1-30
+
+  // Set active mode button
+  document.querySelectorAll('.th-mode-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('th-mode-'+thState.mode);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  let fromPsalm, toPsalm, todayLabel, todaySub;
+
+  if (thState.mode === 'weekly') {
+    const slot = TEHILLIM_WEEKLY[dow];
+    fromPsalm = slot.from; toPsalm = slot.to;
+    todayLabel = 'מזמורים ' + slot.label;
+    todaySub = (toPsalm - fromPsalm + 1) + ' מזמורים · יום ' + slot.dayName;
+  } else if (thState.mode === 'monthly') {
+    const dayKey = Math.min(dom, 30);
+    const slot = TEHILLIM_MONTHLY[dayKey] || {from:1,to:5};
+    fromPsalm = slot.from; toPsalm = slot.to;
+    todayLabel = 'מזמורים ' + fromPsalm + '–' + toPsalm;
+    todaySub = (toPsalm - fromPsalm + 1) + ' מזמורים · יום ' + dom + ' לחודש';
+  } else {
+    fromPsalm = 1; toPsalm = 150;
+    todayLabel = 'כל המזמורים';
+    todaySub = 'בחר ידנית';
+  }
+
+  // Today section
+  document.getElementById('th-today-label').textContent = todayLabel;
+  document.getElementById('th-today-sub').textContent = todaySub;
+
+  // Count done for today's range
+  let doneToday = 0;
+  const totalToday = toPsalm - fromPsalm + 1;
+  for (let p = fromPsalm; p <= toPsalm; p++) {
+    if (thState.done[p]) doneToday++;
+  }
+  const pct = totalToday > 0 ? Math.round((doneToday/totalToday)*100) : 0;
+  document.getElementById('th-today-pct').textContent = pct + '%';
+  document.getElementById('th-today-bar').style.width = pct + '%';
+
+  // Psalms grid for today
+  const grid = document.getElementById('th-psalms-grid');
+  grid.innerHTML = '';
+  const showFrom = thState.mode === 'free' ? 1 : fromPsalm;
+  const showTo = thState.mode === 'free' ? 150 : toPsalm;
+
+  for (let p = showFrom; p <= showTo; p++) {
+    const btn = document.createElement('button');
+    btn.className = 'th-psalm-btn' + (thState.done[p] ? ' done' : '');
+    btn.textContent = p;
+    btn.title = 'מזמור ' + p;
+    btn.onclick = () => togglePsalm(p);
+    grid.appendChild(btn);
+  }
+
+  if (thState.mode === 'free') {
+    document.getElementById('th-grid-label').textContent = 'כל המזמורים (150)';
+  } else {
+    document.getElementById('th-grid-label').textContent = 'מזמורים להיום (' + (showTo-showFrom+1) + ')';
+  }
+
+  // Full week/month view
+  renderFullView(dow, dom, fromPsalm, toPsalm);
+}
+
+function renderFullView(dow, dom, todayFrom, todayTo) {
+  const fullGrid = document.getElementById('th-full-grid');
+  const fullLabel = document.getElementById('th-full-label');
+  fullGrid.innerHTML = '';
+
+  if (thState.mode === 'weekly') {
+    fullLabel.textContent = 'סקירת השבוע';
+    for (let d = 0; d < 7; d++) {
+      const slot = TEHILLIM_WEEKLY[d];
+      let doneCnt = 0;
+      for (let p = slot.from; p <= slot.to; p++) if (thState.done[p]) doneCnt++;
+      const total = slot.to - slot.from + 1;
+      const pct = Math.round((doneCnt/total)*100);
+      const isToday = d === dow;
+      const row = document.createElement('div');
+      row.className = 'th-day-row' + (isToday?' today':'') + (pct===100?' done':'');
+      row.innerHTML = `
+        <div style="width:26px;height:26px;border-radius:50%;
+          border:2px solid ${pct===100?'var(--green2)':isToday?'var(--gold)':'rgba(201,168,76,.3)'};
+          background:${pct===100?'var(--green2)':'transparent'};
+          display:flex;align-items:center;justify-content:center;
+          font-size:11px;font-weight:700;
+          color:${pct===100?'#fff':isToday?'var(--gold)':'var(--muted)'};
+          flex-shrink:0">${pct===100?'✓':d+1}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">
+            יום ${slot.dayName}${isToday?' <span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
+          </div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">מזמורים ${slot.label} · ${doneCnt}/${total}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:${pct===100?'var(--green2)':pct>0?'var(--gold)':'var(--muted2)'};font-family:var(--font-sans)">${pct}%</div>
+      `;
+      fullGrid.appendChild(row);
+    }
+  } else if (thState.mode === 'monthly') {
+    fullLabel.textContent = 'סקירת החודש';
+    for (let d = 1; d <= 30; d++) {
+      const slot = TEHILLIM_MONTHLY[d] || {from:146,to:150};
+      let doneCnt = 0;
+      for (let p = slot.from; p <= slot.to; p++) if (thState.done[p]) doneCnt++;
+      const total = slot.to - slot.from + 1;
+      const pct = Math.round((doneCnt/total)*100);
+      const isToday = d === dom;
+      const row = document.createElement('div');
+      row.className = 'th-day-row' + (isToday?' today':'') + (pct===100?' done':'');
+      row.innerHTML = `
+        <div style="width:26px;height:26px;border-radius:6px;
+          border:1.5px solid ${pct===100?'var(--green2)':isToday?'var(--gold)':'var(--cream2)'};
+          background:${pct===100?'var(--green2)':'transparent'};
+          display:flex;align-items:center;justify-content:center;
+          font-size:11px;font-weight:700;
+          color:${pct===100?'#fff':isToday?'var(--gold)':'var(--muted)'};
+          flex-shrink:0">${pct===100?'✓':d}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">
+            יום ${d}${isToday?' <span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
+          </div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">מזמורים ${slot.from}–${slot.to} · ${doneCnt}/${total}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:${pct===100?'var(--green2)':pct>0?'var(--gold)':'var(--muted2)'};font-family:var(--font-sans)">${pct}%</div>
+      `;
+      fullGrid.appendChild(row);
+    }
+  } else {
+    fullLabel.textContent = 'סה"כ התקדמות';
+    const totalDone = Object.keys(thState.done).filter(k=>thState.done[k]).length;
+    fullGrid.innerHTML = `
+      <div style="text-align:center;padding:16px;background:var(--cream);border-radius:var(--radius2)">
+        <div style="font-size:36px;font-weight:900;color:var(--navy)">${totalDone}</div>
+        <div style="font-size:13px;color:var(--muted);font-family:var(--font-sans)">מזמורים הושלמו מתוך 150</div>
+        <div class="prog-track" style="margin-top:10px;height:8px">
+          <div class="prog-fill" style="width:${Math.round(totalDone/150*100)}%"></div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function togglePsalm(p) {
+  thState.done[p] = !thState.done[p];
+  saveThState();
+  renderTehillimModal();
+}
+
+function markAllTehillimToday() {
+  const today = new Date();
+  const dow = today.getDay();
+  const dom = today.getDate();
+  let from, to;
+  if (thState.mode === 'weekly') {
+    const s = TEHILLIM_WEEKLY[dow]; from=s.from; to=s.to;
+  } else if (thState.mode === 'monthly') {
+    const s = TEHILLIM_MONTHLY[Math.min(dom,30)]; from=s.from; to=s.to;
+  } else { from=1; to=150; }
+  for (let p=from;p<=to;p++) thState.done[p]=true;
+  saveThState(); renderTehillimModal();
+}
+
+function clearTehillimToday() {
+  const today = new Date();
+  const dow = today.getDay();
+  const dom = today.getDate();
+  let from, to;
+  if (thState.mode === 'weekly') {
+    const s = TEHILLIM_WEEKLY[dow]; from=s.from; to=s.to;
+  } else if (thState.mode === 'monthly') {
+    const s = TEHILLIM_MONTHLY[Math.min(dom,30)]; from=s.from; to=s.to;
+  } else { from=1; to=150; }
+  for (let p=from;p<=to;p++) delete thState.done[p];
+  saveThState(); renderTehillimModal();
+}
+
+function saveTehillimSettings() {
+  saveThState();
+  closeModal('modal-tehillim');
+  showAlert('page-dashboard','הגדרות תהילים נשמרו','success');
+}
+</script>
+
 </body>
 </html>
