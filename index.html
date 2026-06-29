@@ -826,10 +826,10 @@ button{font-family:var(--font-serif)}
         <div class="today-txt" id="th-today-quick">תהילים יומי – <span style="color:var(--gold2)">לחץ לפרטים</span></div>
         <button class="mark-btn" onclick="event.stopPropagation();event.preventDefault();openTehillimModal()">פתח ▸</button>
       </div>
-      <div class="today-row">
+      <div class="today-row" style="cursor:pointer" onclick="openMishnaModal()">
         <div class="today-icon">📚</div>
-        <div class="today-txt">ח"י פרקים משניות – מסכת בבא קמא פ"ח–י</div>
-        <button class="mark-btn" onclick="markDone(this)">סמן ✓</button>
+        <div class="today-txt">ח"י פרקים משניות – <span style="color:var(--gold2)">לחץ לפרטים</span></div>
+        <button class="mark-btn" onclick="event.stopPropagation();event.preventDefault();openMishnaModal()">פתח ▸</button>
       </div>
       <div class="today-row">
         <div class="today-icon">🕯️</div>
@@ -895,7 +895,7 @@ button{font-family:var(--font-serif)}
     <div class="subj-grid" id="all-subjects">
       <div class="subj-where">33.74%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">פעם ב'</span></div></div>
       <div class="subj-where">87.04%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:87%"></div></div><div class="prog-row"><span class="prog-pct">87%</span><span class="prog-cnt">מדרש רבה</span></div></div>
-      <div class="subj-card" data-cat="mishna"><div class="subj-top"><div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">מחזור 2</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div><div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">ש"ס מחזור ב'</span></div></div>
+      <div class="subj-card" data-cat="mishna" onclick="openMishnaModal()" style="cursor:pointer"><div class="subj-top"><div><div class="subj-name">ח"י פרקים ליום</div><div class="subj-where">מחזור 2</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div><div class="prog-row"><span class="prog-pct">78%</span><span class="prog-cnt">ש"ס מחזור ב'</span></div></div>
       <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-name">דף יומי</div><div class="subj-where">בבא קמא | דף צ"ב</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:52%"></div></div><div class="prog-row"><span class="prog-pct">52%</span><span class="prog-cnt">מחזור ב'</span></div></div>
       <div class="subj-card" data-cat="gemara"><div class="subj-top"><div><div class="subj-name">ש"ס ירושלמי</div><div class="subj-where">34.55%</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:34%"></div></div><div class="prog-row"><span class="prog-pct">34%</span><span class="prog-cnt">מסכת שבת</span></div></div>
       <div class="subj-card" data-cat="chassidus"><div class="subj-top"><div><div class="subj-name">לקוטי מוהר"ן</div><div class="subj-where">תורה ו'</div></div><div class="check-ring" onclick="toggleCheck(this)"></div></div><div class="prog-track"><div class="prog-fill" style="width:60%"></div></div><div class="prog-row"><span class="prog-pct">60%</span><span class="prog-cnt">תנינא</span></div></div>
@@ -2323,6 +2323,449 @@ function saveTehillimSettings() {
   saveThState();
   closeModal('modal-tehillim');
   showAlert('page-dashboard','הגדרות תהילים נשמרו','success');
+}
+</script>
+
+
+<!-- ═══ MODAL: ח"י פרקים משניות ═══ -->
+<div class="modal-overlay" id="modal-mishna">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('modal-mishna')">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:22px">📚</span>
+      <div class="modal-title" style="margin-bottom:0">ח"י פרקים משניות</div>
+    </div>
+    <div class="modal-sub">לימוד 18 פרקים ליום לפי סדר המשנה</div>
+
+    <!-- MODE SELECTOR -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans);margin-bottom:10px">אופן הלימוד</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="th-mode-btn active" id="ms-mode-calendar" onclick="setMishnaMode('calendar',this)">
+          <div style="font-weight:700;margin-bottom:2px">לפי לוח החודש</div>
+          <div style="font-size:11px;opacity:.7">29 ימים · לפי הלוח המסורתי</div>
+        </button>
+        <button class="th-mode-btn" id="ms-mode-free" onclick="setMishnaMode('free',this)">
+          <div style="font-weight:700;margin-bottom:2px">מצב חופשי</div>
+          <div style="font-size:11px;opacity:.7">סמן איפה אתה אוחז</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- CYCLES COUNTER -->
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--radius2);padding:14px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:11px;color:var(--gold);font-family:var(--font-sans);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">מחזורים שהושלמו</div>
+        <div style="font-size:28px;font-weight:900;color:var(--gold3)" id="ms-cycles">0</div>
+        <div style="font-size:11px;color:rgba(245,217,138,.45);font-family:var(--font-sans)">פעמים ש"ס מלא</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:11px;color:rgba(245,217,138,.4);font-family:var(--font-sans);margin-bottom:3px">סה"כ פרקים שלמדת</div>
+        <div style="font-size:22px;font-weight:700;color:var(--gold2)" id="ms-total-chapters">0</div>
+        <div style="font-size:10px;color:rgba(245,217,138,.35);font-family:var(--font-sans)">מתוך 524</div>
+      </div>
+    </div>
+
+    <!-- TODAY SECTION -->
+    <div id="ms-today-section" style="background:var(--cream);border-radius:var(--radius2);padding:16px 20px;margin-bottom:18px;border:1.5px solid var(--cream2)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;color:var(--gold);font-family:var(--font-sans);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px">להיום</div>
+          <div style="font-size:17px;font-weight:700;color:var(--navy)" id="ms-today-from">ברכות א–דמאי א</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--font-sans)" id="ms-today-sub">18 פרקים · א' לחודש</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:24px;font-weight:900;color:var(--navy);font-family:var(--font-sans)" id="ms-today-pct">0%</div>
+          <div style="font-size:10px;color:var(--muted);font-family:var(--font-sans)">הושלם</div>
+        </div>
+      </div>
+      <div class="prog-track" style="height:6px">
+        <div class="prog-fill" id="ms-today-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR MODE -->
+    <div id="ms-calendar-view">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans)">לוח החודש</div>
+        <button onclick="markTodayMishnaDone()" style="font-size:11px;padding:5px 14px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold);cursor:pointer;font-family:var(--font-sans);font-weight:700">סמן היום כנלמד ✓</button>
+      </div>
+      <div id="ms-calendar-grid" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- FREE MODE -->
+    <div id="ms-free-view" style="display:none">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;font-family:var(--font-sans);margin-bottom:10px">מיקום נוכחי</div>
+      <div style="background:var(--cream);border-radius:var(--radius2);padding:16px 20px;margin-bottom:14px;border:1.5px solid var(--cream2)">
+        <div style="font-size:13px;color:var(--muted);font-family:var(--font-sans);margin-bottom:10px">בחר את המסכת והפרק שאתה מתחיל ממנו:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:5px;font-family:var(--font-sans)">מסכת</label>
+            <select class="form-select" id="ms-free-tractate" onchange="updateFreeMishna()"></select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:5px;font-family:var(--font-sans)">פרק</label>
+            <select class="form-select" id="ms-free-chapter" onchange="updateFreeMishna()"></select>
+          </div>
+        </div>
+      </div>
+      <div id="ms-free-next" style="background:var(--navy);border-radius:var(--radius2);padding:14px 20px;color:var(--gold3)">
+        <div style="font-size:11px;color:var(--gold);font-family:var(--font-sans);margin-bottom:5px">18 הפרקים הבאים שלך:</div>
+        <div style="font-size:14px;font-weight:700" id="ms-free-next-text">ברכות א' – דמאי א'</div>
+      </div>
+      <button onclick="markFreeMishnaDone()" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border:none;border-radius:var(--radius);font-family:var(--font-serif);font-size:14px;font-weight:700;cursor:pointer">✓ סיימתי – עבור ל-18 הבאים</button>
+    </div>
+
+    <div class="form-actions" style="margin-top:20px">
+      <button class="btn primary" onclick="saveMishnaSettings()">שמור</button>
+      <button class="btn secondary" onclick="closeModal('modal-mishna')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ ח"י פרקים משניות ═══
+
+// Complete Mishna tractate list with chapter counts
+const MISHNA_TRACTATES = [
+  // זרעים
+  {name:'ברכות',   perakim:9,  seder:'זרעים'},
+  {name:'פאה',     perakim:8,  seder:'זרעים'},
+  {name:'דמאי',    perakim:7,  seder:'זרעים'},
+  {name:'כלאים',   perakim:9,  seder:'זרעים'},
+  {name:'שביעית',  perakim:10, seder:'זרעים'},
+  {name:'תרומות',  perakim:11, seder:'זרעים'},
+  {name:'מעשרות',  perakim:5,  seder:'זרעים'},
+  {name:'מעשר שני',perakim:5,  seder:'זרעים'},
+  {name:'חלה',     perakim:4,  seder:'זרעים'},
+  {name:'ערלה',    perakim:3,  seder:'זרעים'},
+  {name:'בכורים',  perakim:3,  seder:'זרעים'},
+  // מועד
+  {name:'שבת',     perakim:24, seder:'מועד'},
+  {name:'עירובין', perakim:10, seder:'מועד'},
+  {name:'פסחים',   perakim:10, seder:'מועד'},
+  {name:'שקלים',   perakim:8,  seder:'מועד'},
+  {name:'יומא',    perakim:8,  seder:'מועד'},
+  {name:'סוכה',    perakim:5,  seder:'מועד'},
+  {name:'ביצה',    perakim:5,  seder:'מועד'},
+  {name:'ראש השנה',perakim:4,  seder:'מועד'},
+  {name:'תענית',   perakim:4,  seder:'מועד'},
+  {name:'מגילה',   perakim:4,  seder:'מועד'},
+  {name:'מועד קטן',perakim:3,  seder:'מועד'},
+  {name:'חגיגה',   perakim:3,  seder:'מועד'},
+  // נשים
+  {name:'יבמות',   perakim:16, seder:'נשים'},
+  {name:'כתובות',  perakim:13, seder:'נשים'},
+  {name:'נדרים',   perakim:11, seder:'נשים'},
+  {name:'נזיר',    perakim:9,  seder:'נשים'},
+  {name:'סוטה',    perakim:9,  seder:'נשים'},
+  {name:'גיטין',   perakim:9,  seder:'נשים'},
+  {name:'קידושין', perakim:4,  seder:'נשים'},
+  // נזיקין
+  {name:'בבא קמא', perakim:10, seder:'נזיקין'},
+  {name:'בבא מציעא',perakim:10,seder:'נזיקין'},
+  {name:'בבא בתרא',perakim:10, seder:'נזיקין'},
+  {name:'סנהדרין', perakim:11, seder:'נזיקין'},
+  {name:'מכות',    perakim:3,  seder:'נזיקין'},
+  {name:'שבועות',  perakim:8,  seder:'נזיקין'},
+  {name:'עדויות',  perakim:8,  seder:'נזיקין'},
+  {name:'עבודה זרה',perakim:5, seder:'נזיקין'},
+  {name:'אבות',    perakim:5,  seder:'נזיקין'},
+  {name:'הוריות',  perakim:3,  seder:'נזיקין'},
+  // קדשים
+  {name:'זבחים',   perakim:14, seder:'קדשים'},
+  {name:'מנחות',   perakim:13, seder:'קדשים'},
+  {name:'חולין',   perakim:12, seder:'קדשים'},
+  {name:'בכורות',  perakim:9,  seder:'קדשים'},
+  {name:'ערכין',   perakim:9,  seder:'קדשים'},
+  {name:'תמורה',   perakim:7,  seder:'קדשים'},
+  {name:'כריתות',  perakim:6,  seder:'קדשים'},
+  {name:'מעילה',   perakim:6,  seder:'קדשים'},
+  {name:'תמיד',    perakim:7,  seder:'קדשים'},
+  {name:'מידות',   perakim:5,  seder:'קדשים'},
+  {name:'קינים',   perakim:3,  seder:'קדשים'},
+  // טהרות
+  {name:'כלים',    perakim:30, seder:'טהרות'},
+  {name:'אהלות',   perakim:18, seder:'טהרות'},
+  {name:'נגעים',   perakim:14, seder:'טהרות'},
+  {name:'פרה',     perakim:12, seder:'טהרות'},
+  {name:'טהרות',   perakim:10, seder:'טהרות'},
+  {name:'מקוואות', perakim:10, seder:'טהרות'},
+  {name:'נדה',     perakim:10, seder:'טהרות'},
+  {name:'מכשירין', perakim:6,  seder:'טהרות'},
+  {name:'זבים',    perakim:5,  seder:'טהרות'},
+  {name:'טבול יום',perakim:4,  seder:'טהרות'},
+  {name:'ידים',    perakim:4,  seder:'טהרות'},
+  {name:'עוקצים',  perakim:3,  seder:'טהרות'},
+];
+
+const TOTAL_MISHNA_PERAKIM = MISHNA_TRACTATES.reduce((s,t)=>s+t.perakim,0); // 524
+
+// Build flat array of all chapters: [{tractate, chapter, globalIndex}]
+const ALL_PERAKIM = [];
+let gIdx = 0;
+for (const t of MISHNA_TRACTATES) {
+  for (let p = 1; p <= t.perakim; p++) {
+    ALL_PERAKIM.push({tractate: t.name, chapter: p, seder: t.seder, global: gIdx++});
+  }
+}
+
+// Calendar: 29-day schedule from the image
+const MISHNA_CALENDAR = {
+  1:  {from:'ברכות א',    to:"דמאי א"},
+  2:  {from:"דמאי ב",     to:"שביעית ג"},
+  3:  {from:"שביעית ד",   to:"תרומות יא"},
+  4:  {from:"מעשרות א",   to:"בכורים א"},
+  5:  {from:"בכורים ב",   to:"שבת יז"},
+  6:  {from:"שבת יז",     to:"עירובין י"},
+  7:  {from:"פסחים א",    to:"שקלים ח"},
+  8:  {from:"יומא א",     to:"ביצה ה"},
+  9:  {from:"ראש השנה א", to:"חגיגה ג"},
+  10: {from:"יבמות א",    to:"כתובות ב"},
+  11: {from:"כתובות ג",   to:"נדרים ז"},
+  12: {from:"נדרים ח",    to:"סוטה ה"},
+  13: {from:"סוטה ו",     to:"בבא קמא א"},
+  14: {from:"בבא קמא ב",  to:"בבא מציעא ט"},
+  15: {from:"בבא מציעא י",to:"סנהדרין ז"},
+  16: {from:"סנהדרין ח",  to:"עדיות ג"},
+  17: {from:"עדיות ד",    to:"הוריות ג"},
+  18: {from:"זבחים א",    to:"מנחות ד"},
+  19: {from:"מנחות ה",    to:"חולין ט"},
+  20: {from:"חולין י",    to:"ערכין ו"},
+  21: {from:"ערכין ז",    to:"מעילה ב"},
+  22: {from:"מעילה ג",    to:"קינים ב"},
+  23: {from:"קינים ג",    to:"כלים יח"},
+  24: {from:"כלים יט",    to:"אהלות ה"},
+  25: {from:"אהלות ו",    to:"נגעים ה"},
+  26: {from:"נגעים ו",    to:"פרה ט"},
+  27: {from:"פרה י",      to:"מקואות ו"},
+  28: {from:"מקואות ז",   to:"מכשירין ג"},
+  29: {from:"מכשירין ד",  to:"עוקצים ג"},
+};
+
+let msState = {
+  mode: localStorage.getItem('ms_mode') || 'calendar',
+  // calendar: which days are done {1: true, ...}
+  calDone: JSON.parse(localStorage.getItem('ms_calDone') || '{}'),
+  // free mode: current global chapter index
+  freePos: parseInt(localStorage.getItem('ms_freePos') || '0'),
+  // total cycles
+  cycles: parseInt(localStorage.getItem('ms_cycles') || '0'),
+};
+
+function saveMsState() {
+  localStorage.setItem('ms_mode', msState.mode);
+  localStorage.setItem('ms_calDone', JSON.stringify(msState.calDone));
+  localStorage.setItem('ms_freePos', msState.freePos);
+  localStorage.setItem('ms_cycles', msState.cycles);
+}
+
+async function openMishnaModal() {
+  document.getElementById('modal-mishna').classList.add('show');
+  renderMishnaModal();
+}
+
+async function renderMishnaModal() {
+  const overlay = document.getElementById('modal-mishna');
+  if (overlay) overlay._asyncLoading = true;
+
+  // Set mode buttons
+  document.querySelectorAll('#modal-mishna .th-mode-btn').forEach(b=>b.classList.remove('active'));
+  const ab = document.getElementById('ms-mode-'+msState.mode);
+  if (ab) ab.classList.add('active');
+
+  // Show/hide views
+  document.getElementById('ms-calendar-view').style.display = msState.mode==='calendar' ? '' : 'none';
+  document.getElementById('ms-free-view').style.display = msState.mode==='free' ? '' : 'none';
+
+  // Cycles
+  document.getElementById('ms-cycles').textContent = msState.cycles;
+  const totalDone = msState.mode==='free' ? msState.freePos + (msState.cycles * TOTAL_MISHNA_PERAKIM) : 0;
+  document.getElementById('ms-total-chapters').textContent = msState.freePos + (msState.cycles * TOTAL_MISHNA_PERAKIM);
+
+  // Get Hebrew date
+  let hebDom = new Date().getDate();
+  try {
+    const ds = new Date().toISOString().split('T')[0];
+    const r = await fetch(`https://www.hebcal.com/converter?cfg=json&date=${ds}&g2h=1&strict=1`);
+    const d = await r.json();
+    hebDom = d.hd || new Date().getDate();
+  } catch(e) {}
+
+  if (msState.mode === 'calendar') {
+    renderMishnaCalendar(hebDom);
+  } else {
+    renderMishnaFree();
+  }
+
+  if (overlay) overlay._asyncLoading = false;
+}
+
+function renderMishnaCalendar(hebDom) {
+  const dayKey = Math.min(hebDom, 29);
+  const slot = MISHNA_CALENDAR[dayKey];
+
+  // Today section
+  document.getElementById('ms-today-from').textContent = slot.from + ' – ' + slot.to;
+  document.getElementById('ms-today-sub').textContent = '18 פרקים · ' + numToHeb(dayKey) + ' לחודש';
+
+  const isDone = msState.calDone[dayKey];
+  document.getElementById('ms-today-pct').textContent = isDone ? '100%' : '0%';
+  document.getElementById('ms-today-bar').style.width = isDone ? '100%' : '0%';
+
+  // Calendar grid
+  const grid = document.getElementById('ms-calendar-grid');
+  grid.innerHTML = '';
+  for (let d = 1; d <= 30; d++) {
+    const s = MISHNA_CALENDAR[Math.min(d, 29)];
+    const done = msState.calDone[Math.min(d, 29)];
+    const isToday = d === hebDom;
+    const isDay30 = d === 30;
+
+    const row = document.createElement('div');
+    row.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);border:1.5px solid ${isToday?'rgba(201,168,76,.5)':done?'rgba(30,107,58,.25)':'var(--cream2)'};background:${done?'rgba(30,107,58,.04)':isToday?'rgba(201,168,76,.04)':'var(--white)'};transition:all .2s;cursor:${isDay30?'default':'pointer'}`;
+    if (!isDay30) row.onclick = () => toggleMishnaDay(d === 30 ? 29 : d);
+
+    row.innerHTML = `
+      <div style="width:28px;height:28px;border-radius:6px;
+        border:1.5px solid ${done?'var(--green2)':isToday?'var(--gold)':'var(--cream2)'};
+        background:${done?'var(--green2)':'transparent'};
+        display:flex;align-items:center;justify-content:center;
+        font-size:12px;font-weight:700;font-family:var(--font-serif);
+        color:${done?'#fff':isToday?'var(--gold)':'var(--muted)'};flex-shrink:0">
+        ${done?'✓':numToHeb(d)}
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px">
+          ${numToHeb(d)} לחודש
+          ${isToday?'<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
+          ${isDay30?'<span style="font-size:10px;background:rgba(184,151,46,.15);color:var(--gold);padding:1px 7px;border-radius:6px;border:1px solid rgba(184,151,46,.3)">בחירה חופשית</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">
+          ${isDay30 ? 'סדר מיוחד לפי בחירה' : s.from + ' – ' + s.to}
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:${done?'var(--green2)':'var(--muted2)'};font-family:var(--font-sans)">${done?'✓ נלמד':''}</div>
+    `;
+    grid.appendChild(row);
+  }
+}
+
+function toggleMishnaDay(d) {
+  msState.calDone[d] = !msState.calDone[d];
+  saveMsState();
+  renderMishnaModal();
+}
+
+function markTodayMishnaDone() {
+  // Get today's heb day - use cached or current
+  const approxDay = new Date().getDate();
+  const key = Math.min(approxDay, 29);
+  msState.calDone[key] = true;
+  saveMsState();
+  renderMishnaModal();
+}
+
+function renderMishnaFree() {
+  // Populate tractate selector
+  const tractSel = document.getElementById('ms-free-tractate');
+  if (tractSel.options.length === 0) {
+    MISHNA_TRACTATES.forEach((t,i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = t.name + ' (' + t.seder + ')';
+      tractSel.appendChild(opt);
+    });
+  }
+
+  // Find current position
+  let globalPos = msState.freePos % TOTAL_MISHNA_PERAKIM;
+  const curChapter = ALL_PERAKIM[globalPos] || ALL_PERAKIM[0];
+
+  // Set tractate
+  const tractIdx = MISHNA_TRACTATES.findIndex(t=>t.name===curChapter.tractate);
+  tractSel.value = tractIdx >= 0 ? tractIdx : 0;
+  updateFreeMishnaChapters(tractIdx >= 0 ? tractIdx : 0, curChapter.chapter);
+
+  updateFreeMishna();
+
+  // Today section for free mode
+  document.getElementById('ms-today-from').textContent = getFreeMishnaRange();
+  document.getElementById('ms-today-sub').textContent = '18 פרקים הבאים · עמדה ' + (globalPos+1) + '/' + TOTAL_MISHNA_PERAKIM;
+  const pct = Math.round((globalPos/TOTAL_MISHNA_PERAKIM)*100);
+  document.getElementById('ms-today-pct').textContent = pct + '%';
+  document.getElementById('ms-today-bar').style.width = pct + '%';
+}
+
+function updateFreeMishnaChapters(tractIdx, selectedChap) {
+  const chapSel = document.getElementById('ms-free-chapter');
+  const t = MISHNA_TRACTATES[tractIdx];
+  if (!t) return;
+  chapSel.innerHTML = '';
+  for (let p = 1; p <= t.perakim; p++) {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = 'פרק ' + numToHeb(p);
+    if (p === selectedChap) opt.selected = true;
+    chapSel.appendChild(opt);
+  }
+}
+
+function updateFreeMishna() {
+  const tractIdx = parseInt(document.getElementById('ms-free-tractate').value) || 0;
+  const chapter = parseInt(document.getElementById('ms-free-chapter').value) || 1;
+  updateFreeMishnaChapters(tractIdx, chapter);
+
+  // Calculate global position
+  let globalPos = 0;
+  for (let i = 0; i < tractIdx; i++) globalPos += MISHNA_TRACTATES[i].perakim;
+  globalPos += chapter - 1;
+  msState.freePos = globalPos + (msState.cycles * TOTAL_MISHNA_PERAKIM);
+
+  const rangeText = getFreeMishnaRangeFrom(globalPos);
+  const el = document.getElementById('ms-free-next-text');
+  if (el) el.textContent = rangeText;
+}
+
+function getFreeMishnaRange() {
+  const pos = msState.freePos % TOTAL_MISHNA_PERAKIM;
+  return getFreeMishnaRangeFrom(pos);
+}
+
+function getFreeMishnaRangeFrom(startPos) {
+  const start = ALL_PERAKIM[startPos];
+  const endPos = Math.min(startPos + 17, TOTAL_MISHNA_PERAKIM - 1);
+  const end = ALL_PERAKIM[endPos];
+  if (!start || !end) return '';
+  const startStr = start.tractate + ' ' + numToHeb(start.chapter);
+  const endStr = end.tractate + ' ' + numToHeb(end.chapter);
+  return startStr + ' – ' + endStr;
+}
+
+function markFreeMishnaDone() {
+  let pos = msState.freePos % TOTAL_MISHNA_PERAKIM;
+  pos += 18;
+  if (pos >= TOTAL_MISHNA_PERAKIM) {
+    msState.cycles++;
+    pos = pos % TOTAL_MISHNA_PERAKIM;
+  }
+  msState.freePos = pos + (msState.cycles * TOTAL_MISHNA_PERAKIM);
+  saveMsState();
+  renderMishnaModal();
+}
+
+function setMishnaMode(mode, btn) {
+  msState.mode = mode;
+  saveMsState();
+  document.querySelectorAll('#modal-mishna .th-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMishnaModal();
+}
+
+function saveMishnaSettings() {
+  saveMsState();
+  closeModal('modal-mishna');
+  showAlert('page-dashboard','הגדרות ח"י פרקים נשמרו','success');
 }
 </script>
 
