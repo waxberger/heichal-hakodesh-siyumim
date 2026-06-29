@@ -1345,6 +1345,7 @@ function toggleSubjectActive(id,val){
   if(s){s.active=val;showSubjAlert((val?'הופעל':'כובה')+`: "${s.name}"`);}
 }
 function openSubjectModal(mode,id=null){
+  document.body.style.overflow = 'hidden';
   editingSubjectId=id;
   const db=document.getElementById('ms-delete-btn');
   if(mode==='new'){
@@ -1423,7 +1424,7 @@ function createUser(){
   a.classList.add('show');
   setTimeout(()=>{a.classList.remove('show');switchAdminTab('users',document.querySelectorAll('.admin-tab')[2]);},3000);
 }
-function editUser(){document.getElementById('modal-edit-user').classList.add('show');}
+function editUser(){document.getElementById('modal-edit-user').classList.add('show');document.body.style.overflow='hidden';}
 function saveEditUser(){showUsersAlert('הפרטים עודכנו בהצלחה');closeModal('modal-edit-user');}
 
 // ═══ REQUESTS ═══
@@ -1461,7 +1462,13 @@ function filterCat(cat,btn){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   document.querySelectorAll('#all-subjects .subj-card').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';});
 }
-function closeModal(id){document.getElementById(id).classList.remove('show');}
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+  // Restore body scroll if no other modals open
+  if (!document.querySelector('.modal-overlay.show')) {
+    document.body.style.overflow = '';
+  }
+}
 function switchLang(lang,btn){document.querySelectorAll('.lo-lang-btn,.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 document.querySelectorAll('.modal-overlay').forEach(o=>{
   // Only close if click is directly on overlay background (not during scroll)
@@ -2126,6 +2133,7 @@ function saveThState() {
 async function openTehillimModal() {
   const overlay = document.getElementById('modal-tehillim');
   overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
   await renderTehillimModal();
 }
 
@@ -2566,8 +2574,10 @@ function saveMsState() {
 }
 
 async function openMishnaModal() {
-  document.getElementById('modal-mishna').classList.add('show');
-  renderMishnaModal();
+  const overlay = document.getElementById('modal-mishna');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  await renderMishnaModal();
 }
 
 async function renderMishnaModal() {
