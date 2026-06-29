@@ -1545,8 +1545,10 @@ const ALIYA_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי
 let smState = {
   parsha: null,
   aliyot: null,
-  // which days are done (0=Sun..6=Sat)
+  _lastParshaItem: null,
   doneDays: JSON.parse(localStorage.getItem('sm_doneDays') || '[]'),
+  dayTargum: JSON.parse(localStorage.getItem('sm_dayTargum') || '{}'),
+  dayMefarshim: JSON.parse(localStorage.getItem('sm_dayMefarshim') || '{}'),
   mefarshim: JSON.parse(localStorage.getItem('sm_mefarshim') || JSON.stringify([
     {id:'rashi',   name:'רש"י',        short:'רש"י',   enabled:true,  done:false},
     {id:'ramban',  name:'רמב"ן',       short:'רמב"ן',  enabled:false, done:false},
@@ -1561,6 +1563,8 @@ let smState = {
 function saveSmState() {
   localStorage.setItem('sm_doneDays', JSON.stringify(smState.doneDays));
   localStorage.setItem('sm_mefarshim', JSON.stringify(smState.mefarshim));
+  localStorage.setItem('sm_dayTargum', JSON.stringify(smState.dayTargum||{}));
+  localStorage.setItem('sm_dayMefarshim', JSON.stringify(smState.dayMefarshim||{}));
 }
 
 async function openShnayimModal() {
@@ -1587,6 +1591,7 @@ async function loadParsha() {
     if (parshaItem) {
       smState.parsha = parshaItem.hebrew || parshaItem.title;
       smState.aliyot = parshaItem.leyning;
+      smState._lastParshaItem = parshaItem;
       renderShnayimModal(parshaItem);
     } else {
       document.getElementById('sm-parsha-sub').textContent = 'לא נמצאה פרשת השבוע (ייתכן שבת חג)';
@@ -1597,51 +1602,135 @@ async function loadParsha() {
   }
 }
 
+// Convert "Numbers 25:10-26:4" to "במדבר כה:י–כו:ד" style (simplified: just translate book name)
+function hebrewRef(ref) {
+  if (!ref) return '';
+  const books = {
+    'Genesis':'בראשית','Exodus':'שמות','Leviticus':'ויקרא',
+    'Numbers':'במדבר','Deuteronomy':'דברים',
+    'Joshua':'יהושע','Judges':'שופטים','Samuel':'שמואל',
+    'Kings':'מלכים','Isaiah':'ישעיה','Jeremiah':'ירמיה',
+    'Ezekiel':'יחזקאל','Hosea':'הושע','Joel':'יואל',
+    'Amos':'עמוס','Obadiah':'עובדיה','Jonah':'יונה',
+    'Micah':'מיכה','Nahum':'נחום','Habakkuk':'חבקוק',
+    'Zephaniah':'צפניה','Haggai':'חגי','Zechariah':'זכריה',
+    'Malachi':'מלאכי','Psalms':'תהילים','Proverbs':'משלי',
+    'Job':'איוב','Song of Songs':'שיר השירים','Ruth':'רות',
+    'Lamentations':'איכה','Ecclesiastes':'קהלת','Esther':'אסתר',
+    'Daniel':'דניאל','Ezra':'עזרא','Nehemiah':'נחמיה',
+    'Chronicles':'דברי הימים'
+  };
+  let result = ref;
+  for (const [en, he] of Object.entries(books)) {
+    result = result.replace(new RegExp(en, 'g'), he);
+  }
+  return result;
+}
+
 function renderShnayimModal(parshaItem) {
-  const name = parshaItem.hebrew || parshaItem.title?.replace('Parashat ','פרשת ');
-  document.getElementById('sm-parsha-sub').textContent = 'לימוד שניים מקרא ואחד תרגום לפרשת ' + (parshaItem.title?.split(' ').pop() || '');
-  document.getElementById('sm-parsha-name').textContent = name;
+  const hebrewName = parshaItem.hebrew || '';
+  const parshaDisplayName = hebrewName || parshaItem.title?.split(' ').pop() || '';
+  document.getElementById('sm-parsha-sub').textContent = 'לימוד שניים מקרא ואחד תרגום לפרשת ' + parshaDisplayName;
+  document.getElementById('sm-parsha-name').textContent = 'פרשת ' + parshaDisplayName;
 
   const l = parshaItem.leyning || {};
-  const verses = l.torah || '';
+  const verses = hebrewRef(l.torah || l['1'] || '');
   document.getElementById('sm-parsha-verses').textContent = verses;
   document.getElementById('sm-parsha-header').style.display = '';
 
-  // Build days grid – day N reads aliya N+1
-  // Sun=aliya 1, Mon=aliya 2, Tue=aliya 3, Wed=aliya 4, Thu=aliya 5, Fri=aliya 6, Shab=aliya 7
   const grid = document.getElementById('sm-days-grid');
   const todayDay = new Date().getDay();
   grid.innerHTML = '';
 
+  // Get enabled mefarshim
+  const activeMefarshim = smState.mefarshim.filter(m => m.enabled);
+
   for (let d = 0; d < 7; d++) {
     const aliyaNum = (d + 1).toString();
-    const aliyaText = l[aliyaNum] || '';
-    const isDone = smState.doneDays.includes(d);
+    const rawRef = l[aliyaNum] || '';
+    const aliyaRef = hebrewRef(rawRef);
+    const isDayDone = smState.doneDays.includes(d);
     const isToday = d === todayDay;
 
-    const row = document.createElement('div');
-    row.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);border:1.5px solid ${isToday ? 'rgba(201,168,76,.5)' : 'var(--cream2)'};background:${isDone ? 'rgba(30,107,58,.06)' : isToday ? 'rgba(201,168,76,.05)' : 'var(--white)'};transition:all .2s;cursor:pointer`;
-    row.onclick = () => toggleDay(d);
-    row.id = 'sm-day-'+d;
+    // Per-day mefaresh state
+    if (!smState.dayMefarshim) smState.dayMefarshim = {};
+    if (!smState.dayMefarshim[d]) smState.dayMefarshim[d] = {};
 
-    row.innerHTML = `
-      <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${isDone?'var(--green2)':'rgba(201,168,76,.4)'};background:${isDone?'var(--green2)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:12px;color:${isDone?'#fff':'var(--gold)'};font-weight:700;flex-shrink:0;transition:all .2s">
-        ${isDone ? '✓' : d+1}
+    // Count how many items done for this day
+    const totalItems = 2 + activeMefarshim.length; // mikra + targum + mefarshim
+    const doneMefarshim = activeMefarshim.filter(m => smState.dayMefarshim[d][m.id]).length;
+    const doneItems = (smState.doneDays.includes(d) ? 1 : 0) + 
+                      (smState.dayTargum && smState.dayTargum[d] ? 1 : 0) + 
+                      doneMefarshim;
+    const dayPct = totalItems > 0 ? Math.round((doneItems/totalItems)*100) : 0;
+
+    const card = document.createElement('div');
+    card.style.cssText = `
+      border-radius:var(--radius2);
+      border:1.5px solid ${isToday ? 'rgba(201,168,76,.4)' : isDayDone&&dayPct===100 ? 'rgba(30,107,58,.3)' : 'var(--cream2)'};
+      background:${isDayDone&&dayPct===100 ? 'rgba(30,107,58,.04)' : isToday ? 'rgba(201,168,76,.04)' : 'var(--white)'};
+      margin-bottom:6px;overflow:hidden;transition:all .2s;
+    `;
+    card.id = 'sm-day-'+d;
+
+    // Day header
+    const header = document.createElement('div');
+    header.style.cssText = `
+      display:flex;align-items:center;gap:10px;padding:11px 16px;
+      cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05);
+      background:${isToday ? 'rgba(201,168,76,.06)' : 'transparent'};
+    `;
+    header.onclick = () => toggleDayExpand(d);
+    header.innerHTML = `
+      <div style="width:28px;height:28px;border-radius:50%;
+        border:2px solid ${dayPct===100?'var(--green2)':isToday?'var(--gold)':'rgba(201,168,76,.35)'};
+        background:${dayPct===100?'var(--green2)':isToday?'rgba(201,168,76,.15)':'transparent'};
+        display:flex;align-items:center;justify-content:center;
+        font-size:11px;font-weight:700;color:${dayPct===100?'#fff':isToday?'var(--gold)':'var(--gold)'};
+        flex-shrink:0;transition:all .2s">
+        ${dayPct===100 ? '✓' : d+1}
       </div>
       <div style="flex:1">
         <div style="font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px">
           יום ${DAY_NAMES[d]}
-          ${isToday ? '<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 8px;border-radius:8px;font-family:var(--font-sans)">היום</span>' : ''}
+          ${isToday ? '<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 8px;border-radius:8px;font-family:var(--font-sans);font-weight:700">היום</span>' : ''}
         </div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--font-sans)">
-          עליה ${ALIYA_NAMES[d]}${aliyaText ? ' | ' + aliyaText : ''}
+        <div style="font-size:11px;color:var(--muted);margin-top:1px;font-family:var(--font-sans)">
+          עליה ${ALIYA_NAMES[d]}${aliyaRef ? ' · ' + aliyaRef : ''}
         </div>
       </div>
-      <div style="font-size:11px;color:${isDone?'var(--green2)':'var(--muted2)'};font-family:var(--font-sans);font-weight:${isDone?'700':'400'}">
-        ${isDone ? '✓ נלמד' : 'לסימון'}
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;color:${dayPct===100?'var(--green2)':dayPct>0?'var(--gold)':'var(--muted2)'};font-family:var(--font-sans);font-weight:700">
+          ${dayPct}%
+        </div>
+        <div style="font-size:10px;color:var(--muted2);transition:transform .2s" id="sm-arrow-${d}">▼</div>
       </div>
     `;
-    grid.appendChild(row);
+    card.appendChild(header);
+
+    // Checklist body (collapsed by default, expanded for today)
+    const body = document.createElement('div');
+    body.id = 'sm-body-'+d;
+    body.style.cssText = `padding:${isToday?'10px 16px':'0 16px'};max-height:${isToday?'300px':'0'};overflow:hidden;transition:max-height .3s ease,padding .3s ease`;
+
+    // Build checklist items
+    const mikraDone = smState.doneDays.includes(d);
+    if (!smState.dayTargum) smState.dayTargum = {};
+    const targumDone = smState.dayTargum[d] || false;
+
+    let items = `
+      <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:10px">
+        ${checkItem('מקרא', mikraDone, `toggleMikra(${d})`)}
+        ${checkItem('תרגום אונקלוס', targumDone, `toggleTargum(${d})`)}
+        ${activeMefarshim.map(m => {
+          const mDone = smState.dayMefarshim[d][m.id] || false;
+          return checkItem(m.name, mDone, `toggleDayMefaresh(${d},'${m.id}')`);
+        }).join('')}
+      </div>
+    `;
+    body.innerHTML = items;
+    card.appendChild(body);
+    grid.appendChild(card);
   }
 
   renderMefarshim();
@@ -1649,28 +1738,50 @@ function renderShnayimModal(parshaItem) {
   updateReminder();
 }
 
-function toggleDay(d) {
+function checkItem(label, done, onclick) {
+  return `
+    <div onclick="${onclick}" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:7px 10px;border-radius:var(--radius);background:${done?'rgba(30,107,58,.06)':'rgba(0,0,0,.02)'};border:1px solid ${done?'rgba(30,107,58,.2)':'transparent'};transition:all .15s">
+      <div style="width:20px;height:20px;border-radius:5px;border:2px solid ${done?'var(--green2)':'var(--cream2)'};background:${done?'var(--green2)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;transition:all .15s">${done?'✓':''}</div>
+      <span style="font-size:13px;font-weight:${done?'700':'400'};color:${done?'var(--green)':'var(--text)'};text-decoration:${done?'line-through':'none'};transition:all .15s">${label}</span>
+    </div>
+  `;
+}
+
+function toggleDayExpand(d) {
+  const body = document.getElementById('sm-body-'+d);
+  const arrow = document.getElementById('sm-arrow-'+d);
+  const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '0';
+  body.style.maxHeight = isOpen ? '0' : '400px';
+  body.style.padding = isOpen ? '0 16px' : '10px 16px';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function toggleMikra(d) {
   const idx = smState.doneDays.indexOf(d);
   if (idx >= 0) smState.doneDays.splice(idx, 1);
   else smState.doneDays.push(d);
   saveSmState();
-  // Re-render just this row
-  const l = smState.aliyot || {};
-  const aliyaNum = (d + 1).toString();
-  const aliyaText = l[aliyaNum] || '';
-  const isDone = smState.doneDays.includes(d);
-  const isToday = d === new Date().getDay();
-  const row = document.getElementById('sm-day-'+d);
-  if (row) {
-    row.style.border = `1.5px solid ${isToday ? 'rgba(201,168,76,.5)' : isDone ? 'rgba(30,107,58,.3)' : 'var(--cream2)'}`;
-    row.style.background = isDone ? 'rgba(30,107,58,.06)' : isToday ? 'rgba(201,168,76,.05)' : 'var(--white)';
-    row.querySelector('div').style.cssText += `;border-color:${isDone?'var(--green2)':'rgba(201,168,76,.4)'};background:${isDone?'var(--green2)':'transparent'};color:${isDone?'#fff':'var(--gold)'}`;
-    row.querySelector('div').textContent = isDone ? '✓' : (d+1).toString();
-    row.querySelectorAll('div')[2].textContent = isDone ? '✓ נלמד' : 'לסימון';
-    row.querySelectorAll('div')[2].style.color = isDone ? 'var(--green2)' : 'var(--muted2)';
-  }
-  updateProgress();
-  updateReminder();
+  renderShnayimModal(smState._lastParshaItem);
+}
+
+function toggleTargum(d) {
+  if (!smState.dayTargum) smState.dayTargum = {};
+  smState.dayTargum[d] = !smState.dayTargum[d];
+  saveSmState();
+  renderShnayimModal(smState._lastParshaItem);
+}
+
+function toggleDayMefaresh(d, mid) {
+  if (!smState.dayMefarshim) smState.dayMefarshim = {};
+  if (!smState.dayMefarshim[d]) smState.dayMefarshim[d] = {};
+  smState.dayMefarshim[d][mid] = !smState.dayMefarshim[d][mid];
+  saveSmState();
+  renderShnayimModal(smState._lastParshaItem);
+}
+
+function toggleDay(d) {
+  // kept for backwards compat – now handled by toggleMikra
+  toggleMikra(d);
 }
 
 function renderMefarshim() {
@@ -1729,10 +1840,25 @@ function addMefaresh() {
 }
 
 function updateProgress() {
-  const done = smState.doneDays.length;
-  const pct = Math.round((done / 7) * 100);
-  document.getElementById('sm-progress-pct').textContent = pct + '%';
-  document.getElementById('sm-progress-fill').style.width = pct + '%';
+  // Total items = 7 days × (mikra + targum + active mefarshim)
+  const activeMef = smState.mefarshim.filter(m=>m.enabled).length;
+  const itemsPerDay = 2 + activeMef;
+  const totalItems = 7 * itemsPerDay;
+  let doneItems = 0;
+  for (let d=0;d<7;d++) {
+    if (smState.doneDays.includes(d)) doneItems++;
+    if (smState.dayTargum&&smState.dayTargum[d]) doneItems++;
+    if (smState.dayMefarshim&&smState.dayMefarshim[d]) {
+      smState.mefarshim.filter(m=>m.enabled).forEach(m=>{
+        if (smState.dayMefarshim[d][m.id]) doneItems++;
+      });
+    }
+  }
+  const pct = totalItems>0 ? Math.round((doneItems/totalItems)*100) : 0;
+  const el1=document.getElementById('sm-progress-pct');
+  const el2=document.getElementById('sm-progress-fill');
+  if(el1)el1.textContent=pct+'%';
+  if(el2)el2.style.width=pct+'%';
 }
 
 function updateReminder() {
