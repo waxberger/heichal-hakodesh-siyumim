@@ -1463,9 +1463,15 @@ function filterCat(cat,btn){
 }
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 function switchLang(lang,btn){document.querySelectorAll('.lo-lang-btn,.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{
-  if(e.target===o && !o._asyncLoading) o.classList.remove('show');
-}));
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  // Only close if click is directly on overlay background (not during scroll)
+  let _mousedownOnOverlay = false;
+  o.addEventListener('mousedown', e=>{ _mousedownOnOverlay = (e.target===o); });
+  o.addEventListener('click', e=>{
+    if(e.target===o && _mousedownOnOverlay && !o._asyncLoading) o.classList.remove('show');
+    _mousedownOnOverlay = false;
+  });
+});
 </script>
 
 <!-- ═══ MODAL: שניים מקרא ואחד תרגום ═══ -->
