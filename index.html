@@ -1722,6 +1722,67 @@ button:active:not(.mark-btn):not(.check-ring) { transform: scale(.96) !important
 @keyframes lxFadeIn { from { opacity:.3; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
 </style>
 
+
+<style id="fix-subjects">
+/* Fix subject cards grid */
+.subj-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  gap: 16px !important;
+}
+.subj-card {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+/* Fix subjects page padding */
+#page-subjects {
+  padding: 28px 32px !important;
+  max-width: 920px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+/* Fix the subj-top layout */
+.subj-top {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  margin-bottom: 0 !important;
+}
+/* Fix stat icons - they have emoji now, hide old ones */
+.stat-icon { display: none !important; }
+.stat { justify-content: center !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 4px !important; }
+.stat-body { text-align: center !important; }
+
+/* Better hero layout */
+.hero-user-row {
+  padding: 24px 32px 18px !important;
+  justify-content: space-between !important;
+}
+.hero-user-info { text-align: center !important; flex: none !important; }
+
+/* Fix chizuk slider text alignment */
+.chizuk-text { font-size: 14px !important; }
+
+/* Fix today rows - make mark-btn properly round */
+.today-row .mark-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+}
+.today-row .mark-btn.done { font-size: 16px !important; }
+
+/* Fix פתח buttons - they should look like pills not circles */
+.today-row [class="mark-btn"] {
+  width: auto !important;
+  min-width: 60px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  border-radius: 20px !important;
+}
+</style>
+
 </head>
 <body>
 
