@@ -2545,17 +2545,16 @@ const MISHNA_CALENDAR = {
 
 let msState = {
   mode: localStorage.getItem('ms_mode') || 'calendar',
-  // calendar: which days are done {1: true, ...}
   calDone: JSON.parse(localStorage.getItem('ms_calDone') || '{}'),
-  // free mode: current global chapter index
+  calPerekDone: JSON.parse(localStorage.getItem('ms_calPerekDone') || '{}'),
   freePos: parseInt(localStorage.getItem('ms_freePos') || '0'),
-  // total cycles
   cycles: parseInt(localStorage.getItem('ms_cycles') || '0'),
 };
 
 function saveMsState() {
   localStorage.setItem('ms_mode', msState.mode);
   localStorage.setItem('ms_calDone', JSON.stringify(msState.calDone));
+  localStorage.setItem('ms_calPerekDone', JSON.stringify(msState.calPerekDone||{}));
   localStorage.setItem('ms_freePos', msState.freePos);
   localStorage.setItem('ms_cycles', msState.cycles);
 }
@@ -2601,69 +2600,175 @@ async function renderMishnaModal() {
   if (overlay) overlay._asyncLoading = false;
 }
 
+// Build list of actual perakim for a calendar day
+function getMishnaCalPerakim(dayKey) {
+  const slot = MISHNA_CALENDAR[Math.min(dayKey, 29)];
+  if (!slot) return [];
+  // Parse "ברכות א" -> {tractate, chapter}
+  function parseRef(ref) {
+    const parts = ref.trim().split(' ');
+    // last part is chapter (Hebrew letter), rest is tractate name
+    const chapHeb = parts[parts.length - 1];
+    const tractate = parts.slice(0, -1).join(' ');
+    // Convert Hebrew letter to number
+    const hebNums = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'יא':11,'יב':12,'יג':13,'יד':14,'טו':15,'טז':16,'יז':17,'יח':18,'יט':19,'כ':20,'כא':21,'כב':22,'כג':23,'כד':24,'כה':25,'כו':26,'כז':27,'כח':28,'כט':29,'ל':30};
+    const chap = hebNums[chapHeb] || 1;
+    return {tractate, chapter: chap};
+  }
+  const from = parseRef(slot.from);
+  const to = parseRef(slot.to);
+  // Find global indices
+  const fromGlobal = ALL_PERAKIM.findIndex(p => p.tractate === from.tractate && p.chapter === from.chapter);
+  const toGlobal = ALL_PERAKIM.findIndex(p => p.tractate === to.tractate && p.chapter === to.chapter);
+  if (fromGlobal < 0 || toGlobal < 0) return [];
+  return ALL_PERAKIM.slice(fromGlobal, toGlobal + 1);
+}
+
 function renderMishnaCalendar(hebDom) {
   const dayKey = Math.min(hebDom, 29);
   const slot = MISHNA_CALENDAR[dayKey];
 
-  // Today section
-  document.getElementById('ms-today-from').textContent = slot.from + ' – ' + slot.to;
-  document.getElementById('ms-today-sub').textContent = '18 פרקים · ' + numToHeb(dayKey) + ' לחודש';
+  // Init per-perek done state
+  if (!msState.calPerekDone) msState.calPerekDone = {};
 
-  const isDone = msState.calDone[dayKey];
-  document.getElementById('ms-today-pct').textContent = isDone ? '100%' : '0%';
-  document.getElementById('ms-today-bar').style.width = isDone ? '100%' : '0%';
+  // Calculate today's progress
+  const todayPerakim = getMishnaCalPerakim(dayKey);
+  const todayDone = todayPerakim.filter(p => msState.calPerekDone[p.global]).length;
+  const todayPct = todayPerakim.length > 0 ? Math.round((todayDone / todayPerakim.length) * 100) : 0;
+
+  document.getElementById('ms-today-from').textContent = slot.from + ' – ' + slot.to;
+  document.getElementById('ms-today-sub').textContent = todayDone + '/' + todayPerakim.length + ' פרקים · ' + numToHeb(dayKey) + ' לחודש';
+  document.getElementById('ms-today-pct').textContent = todayPct + '%';
+  document.getElementById('ms-today-bar').style.width = todayPct + '%';
 
   // Calendar grid
   const grid = document.getElementById('ms-calendar-grid');
   grid.innerHTML = '';
+
   for (let d = 1; d <= 30; d++) {
-    const s = MISHNA_CALENDAR[Math.min(d, 29)];
-    const done = msState.calDone[Math.min(d, 29)];
     const isToday = d === hebDom;
     const isDay30 = d === 30;
+    const dKey = Math.min(d, 29);
+    const s = MISHNA_CALENDAR[dKey];
+    const dPerakim = isDay30 ? [] : getMishnaCalPerakim(dKey);
+    const dDone = dPerakim.filter(p => msState.calPerekDone[p.global]).length;
+    const dPct = dPerakim.length > 0 ? Math.round((dDone / dPerakim.length) * 100) : 0;
+    const allDone = dPct === 100;
 
-    const row = document.createElement('div');
-    row.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);border:1.5px solid ${isToday?'rgba(201,168,76,.5)':done?'rgba(30,107,58,.25)':'var(--cream2)'};background:${done?'rgba(30,107,58,.04)':isToday?'rgba(201,168,76,.04)':'var(--white)'};transition:all .2s;cursor:${isDay30?'default':'pointer'}`;
-    if (!isDay30) row.onclick = () => toggleMishnaDay(d === 30 ? 29 : d);
+    const card = document.createElement('div');
+    card.style.cssText = `
+      border-radius:var(--radius2);
+      border:1.5px solid ${isToday?'rgba(201,168,76,.4)':allDone?'rgba(30,107,58,.3)':'var(--cream2)'};
+      background:${allDone?'rgba(30,107,58,.04)':isToday?'rgba(201,168,76,.04)':'var(--white)'};
+      margin-bottom:6px;overflow:hidden;transition:all .2s;
+    `;
 
-    row.innerHTML = `
+    // Header row
+    const header = document.createElement('div');
+    header.style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:${isDay30?'default':'pointer'};transition:background .15s`;
+    if (!isDay30) header.onclick = () => toggleDayExpandMs(d);
+    header.innerHTML = `
       <div style="width:28px;height:28px;border-radius:6px;
-        border:1.5px solid ${done?'var(--green2)':isToday?'var(--gold)':'var(--cream2)'};
-        background:${done?'var(--green2)':'transparent'};
+        border:1.5px solid ${allDone?'var(--green2)':isToday?'var(--gold)':'var(--cream2)'};
+        background:${allDone?'var(--green2)':'transparent'};
         display:flex;align-items:center;justify-content:center;
         font-size:12px;font-weight:700;font-family:var(--font-serif);
-        color:${done?'#fff':isToday?'var(--gold)':'var(--muted)'};flex-shrink:0">
-        ${done?'✓':numToHeb(d)}
+        color:${allDone?'#fff':isToday?'var(--gold)':'var(--muted)'};flex-shrink:0">
+        ${allDone?'✓':numToHeb(d)}
       </div>
       <div style="flex:1">
         <div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px">
           ${numToHeb(d)} לחודש
           ${isToday?'<span style="font-size:10px;background:var(--gold);color:var(--navy);padding:1px 7px;border-radius:6px">היום</span>':''}
-          ${isDay30?'<span style="font-size:10px;background:rgba(184,151,46,.15);color:var(--gold);padding:1px 7px;border-radius:6px;border:1px solid rgba(184,151,46,.3)">בחירה חופשית</span>':''}
+          ${isDay30?'<span style="font-size:10px;background:rgba(184,151,46,.1);color:var(--gold);padding:1px 7px;border-radius:6px;border:1px solid rgba(184,151,46,.25)">בחירה חופשית</span>':''}
         </div>
         <div style="font-size:11px;color:var(--muted);font-family:var(--font-sans)">
-          ${isDay30 ? 'סדר מיוחד לפי בחירה' : s.from + ' – ' + s.to}
+          ${isDay30?'סדר מיוחד לפי בחירה':s.from+' – '+s.to}
         </div>
       </div>
-      <div style="font-size:11px;font-weight:700;color:${done?'var(--green2)':'var(--muted2)'};font-family:var(--font-sans)">${done?'✓ נלמד':''}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${!isDay30?`<div style="font-size:11px;color:${allDone?'var(--green2)':dPct>0?'var(--gold)':'var(--muted2)'};font-family:var(--font-sans);font-weight:700">${dDone}/${dPerakim.length}</div>`:''}
+        ${!isDay30?`<div style="font-size:10px;color:var(--muted2)" id="ms-arrow-${d}">▼</div>`:''}
+      </div>
     `;
-    grid.appendChild(row);
+    card.appendChild(header);
+
+    // Perakim body (expanded for today, collapsed for others)
+    if (!isDay30) {
+      const body = document.createElement('div');
+      body.id = 'ms-body-' + d;
+      body.style.cssText = `padding:${isToday?'10px 14px':'0 14px'};max-height:${isToday?'400px':'0'};overflow:hidden;transition:max-height .3s ease,padding .3s ease`;
+
+      // Mini progress bar
+      const miniBar = `<div style="height:3px;background:var(--cream2);border-radius:2px;margin-bottom:10px;overflow:hidden">
+        <div style="height:100%;width:${dPct}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .4s"></div>
+      </div>`;
+
+      // Perakim buttons grid
+      const perekBtns = dPerakim.map(p => {
+        const isDone = msState.calPerekDone[p.global];
+        return `<button onclick="toggleMishnaPerek(${p.global})" style="
+          padding:6px 4px;border-radius:8px;border:1.5px solid ${isDone?'var(--green2)':'var(--cream2)'};
+          background:${isDone?'rgba(30,107,58,.1)':'var(--white)'};
+          font-family:var(--font-serif);font-size:11px;font-weight:700;
+          color:${isDone?'var(--green2)':'var(--muted)'};cursor:pointer;
+          transition:all .15s;text-align:center;line-height:1.2;
+        " title="${p.tractate} פ&quot;${numToHeb(p.chapter)}">
+          ${p.tractate.length > 4 ? p.tractate.substring(0,4)+'.' : p.tractate}<br>
+          <span style="font-size:10px">${numToHeb(p.chapter)}</span>
+        </button>`;
+      }).join('');
+
+      // Mark all / clear buttons
+      const actionBtns = `<div style="display:flex;gap:6px;margin-top:8px;padding-bottom:2px">
+        <button onclick="markAllMishnaDay(${d})" style="flex:1;padding:6px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold);font-size:11px;cursor:pointer;font-family:var(--font-sans);font-weight:700">סמן הכל ✓</button>
+        <button onclick="clearMishnaDay(${d})" style="flex:1;padding:6px;border-radius:8px;border:1px solid var(--cream2);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--font-sans)">נקה</button>
+      </div>`;
+
+      body.innerHTML = miniBar + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;padding-bottom:4px">${perekBtns}</div>` + actionBtns;
+      card.appendChild(body);
+    }
+
+    grid.appendChild(card);
   }
 }
 
-function toggleMishnaDay(d) {
-  msState.calDone[d] = !msState.calDone[d];
+function toggleDayExpandMs(d) {
+  const body = document.getElementById('ms-body-'+d);
+  const arrow = document.getElementById('ms-arrow-'+d);
+  if (!body) return;
+  const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '0';
+  body.style.maxHeight = isOpen ? '0' : '500px';
+  body.style.padding = isOpen ? '0 14px' : '10px 14px';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function toggleMishnaPerek(globalIdx) {
+  if (!msState.calPerekDone) msState.calPerekDone = {};
+  msState.calPerekDone[globalIdx] = !msState.calPerekDone[globalIdx];
+  saveMsState();
+  renderMishnaModal();
+}
+
+function markAllMishnaDay(d) {
+  if (!msState.calPerekDone) msState.calPerekDone = {};
+  const perakim = getMishnaCalPerakim(Math.min(d, 29));
+  perakim.forEach(p => msState.calPerekDone[p.global] = true);
+  saveMsState();
+  renderMishnaModal();
+}
+
+function clearMishnaDay(d) {
+  if (!msState.calPerekDone) msState.calPerekDone = {};
+  const perakim = getMishnaCalPerakim(Math.min(d, 29));
+  perakim.forEach(p => delete msState.calPerekDone[p.global]);
   saveMsState();
   renderMishnaModal();
 }
 
 function markTodayMishnaDone() {
-  // Get today's heb day - use cached or current
   const approxDay = new Date().getDate();
-  const key = Math.min(approxDay, 29);
-  msState.calDone[key] = true;
-  saveMsState();
-  renderMishnaModal();
+  markAllMishnaDay(Math.min(approxDay, 29));
 }
 
 function renderMishnaFree() {
