@@ -1463,7 +1463,9 @@ function filterCat(cat,btn){
 }
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 function switchLang(lang,btn){document.querySelectorAll('.lo-lang-btn,.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{
+  if(e.target===o && !o._asyncLoading) o.classList.remove('show');
+}));
 </script>
 
 <!-- ═══ MODAL: שניים מקרא ואחד תרגום ═══ -->
@@ -2115,9 +2117,10 @@ function saveThState() {
   localStorage.setItem('th_lastReset', thState.lastReset);
 }
 
-function openTehillimModal() {
-  document.getElementById('modal-tehillim').classList.add('show');
-  renderTehillimModal();
+async function openTehillimModal() {
+  const overlay = document.getElementById('modal-tehillim');
+  overlay.classList.add('show');
+  await renderTehillimModal();
 }
 
 function setTehillimMode(mode, btn) {
@@ -2129,6 +2132,8 @@ function setTehillimMode(mode, btn) {
 }
 
 async function renderTehillimModal() {
+  const overlay = document.getElementById('modal-tehillim');
+  if (overlay) overlay._asyncLoading = true;
   const today = new Date();
   const dow = today.getDay(); // 0=Sun
   const dom = today.getDate(); // 1-30
@@ -2194,10 +2199,11 @@ async function renderTehillimModal() {
   }
 
   // Full week/month view
-  renderFullView(dow, dom, fromPsalm, toPsalm);
+  await renderFullView(dow, dom, fromPsalm, toPsalm);
+  if (overlay) overlay._asyncLoading = false;
 }
 
-function renderFullView(dow, dom, todayFrom, todayTo) {
+async function renderFullView(dow, dom, todayFrom, todayTo) {
   const fullGrid = document.getElementById('th-full-grid');
   const fullLabel = document.getElementById('th-full-label');
   fullGrid.innerHTML = '';
