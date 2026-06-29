@@ -1631,7 +1631,7 @@ function renderShnayimModal(parshaItem) {
   const hebrewName = parshaItem.hebrew || '';
   const parshaDisplayName = hebrewName || parshaItem.title?.split(' ').pop() || '';
   document.getElementById('sm-parsha-sub').textContent = 'לימוד שניים מקרא ואחד תרגום לפרשת ' + parshaDisplayName;
-  document.getElementById('sm-parsha-name').textContent = 'פרשת ' + parshaDisplayName;
+  document.getElementById('sm-parsha-name').textContent = parshaDisplayName.startsWith('פרשת') ? parshaDisplayName : 'פרשת ' + parshaDisplayName;
 
   const l = parshaItem.leyning || {};
   const verses = hebrewRef(l.torah || l['1'] || '');
